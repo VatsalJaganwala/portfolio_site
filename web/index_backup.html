@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Vatsal Jaganwala — Flutter Developer. Building cross-platform mobile and web applications with Flutter, Dart, and GetX. Open to new opportunities." />
+  <meta name="keywords" content="Flutter Developer, Dart, Mobile App Development, Cross-platform, GetX, Firebase" />
+  <meta name="author" content="Vatsal Jaganwala" />
+  <title>Vatsal Jaganwala — Flutter Developer</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+</head>
+
+<body>
+  <!-- Jaspr mounts here -->
+  <div id="root"></div>
+
+  <!-- Scroll animation observer -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      function initObserver() {
+        var observer = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (e) {
+              if (e.isIntersecting) {
+                e.target.classList.add('visible');
+                observer.unobserve(e.target);
+              }
+            });
+          },
+          { threshold: 0.08 }
+        );
+        document.querySelectorAll('.section-animate').forEach(function (el) {
+          observer.observe(el);
+        });
+      }
+
+      // Re-run when Jaspr hydrates the DOM
+      var tries = 0;
+      var check = setInterval(function () {
+        var sections = document.querySelectorAll('.section-animate');
+        if (sections.length > 0 || tries > 20) {
+          clearInterval(check);
+          initObserver();
+        }
+        tries++;
+      }, 300);
+    });
+
+    // Mobile hamburger toggle
+    document.addEventListener('click', function (e) {
+      if (e.target && e.target.id === 'hamburger') {
+        var drawer = document.getElementById('nav-drawer');
+        if (drawer) drawer.classList.toggle('open');
+      }
+      if (e.target && e.target.classList.contains('nav-link')) {
+        var drawer = document.getElementById('nav-drawer');
+        if (drawer) drawer.classList.remove('open');
+      }
+    });
+  </script>
+</body>
+</html>
