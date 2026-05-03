@@ -49,68 +49,94 @@
       ]
     }
   ],
-
-  
   "projects": [
     {
-      "name": "Retail Business Management System",
-      "tag": "Operations & POS Platform",
-      "platforms": ["Web"],
-      "description": "A centralized system designed to manage inventory, production workflows, and point-of-sale operations for a fast-moving retail business. Built to replace manual processes and improve operational efficiency.",
-      "impact": [
-        "Streamlined daily business operations",
-        "Reduced manual tracking and errors",
-        "Improved transaction handling efficiency"
+      "name": "Business Management System for Retail Operations",
+      "platforms": [
+        "Web"
       ],
-      "tech": ["Flutter", "REST APIs"]
+      "description": "Designed and developed a centralized system to manage inventory, production workflows, and point-of-sale operations for a retail business. The platform replaced manual processes and improved operational efficiency.",
+      "impact": [
+        "Reduced manual operational effort",
+        "Improved inventory and production tracking accuracy",
+        "Streamlined transaction handling and billing workflows"
+      ],
+      "technologies_used": [
+        "Flutter",
+        "REST APIs"
+      ]
     },
     {
-      "name": "Rehabilitation Project Management System",
-      "tag": "Workflow & Geo-Mapping Platform",
-      "platforms": ["Android", "iOS", "Web"],
-      "description": "A workflow-driven platform for managing large-scale relocation and rehabilitation processes, including geo-referenced planning, document automation, and multi-stage tracking.",
-      "impact": [
-        "Simplified complex multi-stage workflows",
-        "Enabled accurate geo-based planning",
-        "Automated documentation processes"
+      "name": "Rehabilitation Workflow Management Application",
+      "platforms": [
+        "Android",
+        "iOS",
+        "Web"
       ],
-      "tech": ["Flutter", "Geo-mapping", "DWG Processing"]
+      "description": "Built a workflow-driven application to manage large-scale relocation and rehabilitation processes with geo-referenced planning and automated documentation.",
+      "impact": [
+        "Simplified complex multi-stage relocation workflows",
+        "Enabled accurate geo-based planning and visualization",
+        "Reduced manual documentation effort through automation"
+      ],
+      "technologies_used": [
+        "Flutter",
+        "Geo-mapping",
+        "DWG visualization"
+      ]
     },
     {
-      "name": "Parking Management & Allocation System",
-      "tag": "Smart Allocation Platform",
-      "platforms": ["Android", "iOS", "Web"],
-      "description": "A system for visualizing parking layouts and dynamically allocating spaces using intelligent mapping and optimization logic.",
-      "impact": [
-        "Improved parking allocation efficiency",
-        "Reduced manual planning effort",
-        "Enabled real-time layout visualization"
+      "name": "Parking Management and Allocation Platform",
+      "platforms": [
+        "Android",
+        "iOS",
+        "Web"
       ],
-      "tech": ["Flutter", "Algorithms", "DWG Visualization"]
+      "description": "Developed a platform for visualizing parking layouts, extracting parking inventory, and enabling intelligent space allocation using optimized logic.",
+      "impact": [
+        "Improved parking space utilization efficiency",
+        "Reduced manual allocation effort",
+        "Enabled real-time visualization of parking layouts"
+      ],
+      "technologies_used": [
+        "Flutter",
+        "DWG visualization",
+        "Algorithms"
+      ]
     },
     {
-      "name": "Residential Community Management App",
-      "tag": "Communication & Engagement Platform",
-      "platforms": ["Android", "iOS"],
-      "description": "A mobile application enabling residents and management to communicate efficiently through event updates, visitor tracking, and centralized notifications.",
-      "impact": [
-        "Enhanced resident engagement",
-        "Centralized community communication",
-        "Improved operational coordination"
+      "name": "Residential Community Management Application",
+      "platforms": [
+        "Android",
+        "iOS"
       ],
-      "tech": ["Flutter", "Firebase"]
+      "description": "Created a mobile application to manage community communication, events, visitor tracking, and parcel handling through a centralized platform.",
+      "impact": [
+        "Enhanced communication between residents and management",
+        "Centralized multiple operational workflows",
+        "Improved overall user engagement within the community"
+      ],
+      "technologies_used": [
+        "Flutter",
+        "Firebase"
+      ]
     },
     {
       "name": "2D to 3D Architectural Visualization Platform",
-      "tag": "Visualization & Mapping System",
-      "platforms": ["Web"],
-      "description": "A web platform that transforms 2D architectural plans into interactive 3D visualizations with geo-referenced mapping and structural insights.",
-      "impact": [
-        "Improved design understanding for stakeholders",
-        "Enabled interactive visualization",
-        "Simplified project communication"
+      "platforms": [
+        "Web"
       ],
-      "tech": ["Flutter", "3D Visualization", "Geo-mapping"]
+      "description": "Built a web platform that converts 2D architectural plans into interactive 3D models with geo-referenced mapping and structural insights.",
+      "impact": [
+        "Improved design clarity for stakeholders",
+        "Enabled interactive visualization of complex layouts",
+        "Reduced dependency on manual interpretation of plans"
+      ],
+      "technologies_used": [
+        "Flutter",
+        "3D visualization",
+        "Geo-mapping"
+      ]
     }
   ],
   "education": [
