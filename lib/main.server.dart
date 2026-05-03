@@ -35,7 +35,9 @@ void main() {
         rel: 'stylesheet',
       ),
       link(href: 'styles.css', rel: 'stylesheet'),
+      link(href: 'devtools.css', rel: 'stylesheet'),
       script(src: 'animate.js'),
+      script(src: 'devmode.js'),
     ],
     body: App(data: data),
   ));

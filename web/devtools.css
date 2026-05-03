@@ -1,0 +1,557 @@
+/* ================================================================
+   DEVTOOLS — DESIGN TOKENS & COMPONENT STYLES
+   ================================================================ */
+
+/* ---------- DevTools CSS Custom Properties ---------- */
+:root {
+  --dt-bg:            #1E2227;
+  --dt-sidebar-bg:    #21252B;
+  --dt-border:        #3E4451;
+  --dt-tab-bg:        #282C34;
+  --dt-tab-active:    #1E2227;
+  --dt-overlay-bg:    #0D1117;
+  --dt-text:          #ABB2BF;
+  --dt-text-dim:      #5C6370;
+  --dt-text-dark:     #3E4451;
+  --dt-blue:          #61AFEF;
+  --dt-orange:        #E5C07B;
+  --dt-green:         #98C379;
+  --dt-purple:        #C678DD;
+  --dt-red:           #E06C75;
+  --dt-cyan:          #56B6C2;
+  --dt-yellow:        #D19A66;
+  --dt-selection-bg:  rgba(97, 175, 239, 0.15);
+  --dt-hover-bg:      rgba(97, 175, 239, 0.08);
+  --dt-bound-bg:      rgba(97, 175, 239, 0.06);
+  --dt-bound-border:  #61AFEF;
+  --dt-font: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --dt-font-size: 12px;
+  --dt-line-height: 1.6;
+}
+
+/* ---------- Debug Pill ---------- */
+.debug-pill-wrapper {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+}
+.debug-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px 6px 12px;
+  background: rgba(30, 34, 39, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(97, 175, 239, 0.35);
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: var(--dt-font);
+  font-size: 11px;
+  color: var(--dt-text);
+  user-select: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  white-space: nowrap;
+  position: relative;
+}
+.debug-pill:hover {
+  border-color: rgba(97, 175, 239, 0.7);
+  box-shadow: 0 0 16px rgba(97, 175, 239, 0.2);
+}
+.debug-pill-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(30, 34, 39, 0.95);
+  border: 1px solid rgba(97, 175, 239, 0.35);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-family: var(--dt-font);
+  font-size: 10px;
+  color: var(--dt-text);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  transition-delay: 0s;
+}
+.debug-pill:hover .debug-pill-tooltip {
+  opacity: 1;
+  transition-delay: 0.6s;
+}
+@keyframes pill-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(152, 195, 121, 0.5); }
+  50%       { box-shadow: 0 0 0 5px rgba(152, 195, 121, 0); }
+}
+.pill-dot {
+  width: 8px;
+  height: 8px;
+  background: #98C379;
+  border-radius: 50%;
+  animation: pill-pulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+.pill-debug-text { color: var(--dt-orange); }
+.pill-sep {
+  width: 1px;
+  height: 14px;
+  background: rgba(255,255,255,0.1);
+  flex-shrink: 0;
+}
+.pill-version { color: var(--dt-text-dim); }
+@media (max-width: 1023px) {
+  .debug-pill-wrapper { bottom: 80px; }
+  .debug-pill { padding: 5px 12px 5px 10px; font-size: 10px; }
+}
+
+/* ---------- Flutter Run Overlay ---------- */
+.flutter-run-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #0D1117;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 32px 48px 48px;
+  font-family: var(--dt-font);
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--dt-text);
+  animation: overlay-fade-in 0.25s ease forwards;
+}
+@keyframes overlay-fade-in { from { opacity: 0; } to { opacity: 1; } }
+.overlay-progress {
+  position: absolute;
+  top: 0; left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #61AFEF, #C678DD);
+  animation: progress-grow 4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes progress-grow { from { width: 0%; } to { width: 100%; } }
+@keyframes log-appear {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.log-line {
+  display: block;
+  animation: log-appear 0.2s ease forwards;
+  animation-fill-mode: both;
+  opacity: 0;
+}
+.terminal-cursor {
+  display: inline-block;
+  width: 8px; height: 14px;
+  background: #61AFEF;
+  vertical-align: middle;
+  animation: cursor-blink 1s step-end infinite;
+  animation-delay: 4.0s;
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+@keyframes cursor-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+.overlay-skip-btn {
+  position: absolute;
+  top: 20px; right: 24px;
+  font-family: var(--dt-font);
+  font-size: 11px;
+  color: var(--dt-text-dim);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.15s;
+}
+.overlay-skip-btn:hover { color: var(--dt-text); }
+
+/* ---------- DevTools Shell ---------- */
+.devtools-shell {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  background: var(--dt-bg);
+  animation: devtools-slide-in 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes devtools-slide-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.devtools-shell.exiting {
+  animation: devtools-slide-out 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes devtools-slide-out {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(12px); }
+}
+.devtools-main-row {
+  display: grid;
+  grid-template-columns: 340px 1fr 300px;
+  flex: 1;
+  overflow: hidden;
+  border-top: 1px solid var(--dt-border);
+  border-bottom: 1px solid var(--dt-border);
+  min-height: 0;
+}
+/* On desktop, zone wrappers are transparent grid children */
+.devtools-main-row > .dt-mobile-zone {
+  display: contents;
+  overflow: hidden;
+}
+/* Console zone sits outside the grid — always visible on desktop */
+.devtools-shell > .dt-mobile-zone[data-zone="console"] {
+  display: block;
+}
+.devtools-panel { overflow-y: auto; height: 100%; }
+.devtools-shell ::-webkit-scrollbar        { width: 6px; }
+.devtools-shell ::-webkit-scrollbar-track  { background: transparent; }
+.devtools-shell ::-webkit-scrollbar-thumb  { background: #3E4451; border-radius: 3px; }
+.devtools-shell ::-webkit-scrollbar-thumb:hover { background: #5C6370; }
+
+/* ---------- DevTools Tab Bar ---------- */
+.dt-tab-bar {
+  height: 36px;
+  background: var(--dt-tab-bg);
+  border-bottom: 1px solid var(--dt-border);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.dt-tab-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  flex-shrink: 0;
+}
+.dt-tab-bar-app-name {
+  font-family: var(--dt-font);
+  font-size: 11px;
+  color: var(--dt-text-dim);
+  white-space: nowrap;
+}
+.dt-tab-bar-sep { width: 1px; height: 20px; background: #3E4451; flex-shrink: 0; }
+.dt-tab-bar-tabs { display: flex; align-items: center; flex: 1; }
+.dt-tab {
+  height: 36px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  font-family: var(--dt-font);
+  font-size: 12px;
+  color: var(--dt-text-dim);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  border-top: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  user-select: none;
+  white-space: nowrap;
+}
+.dt-tab:hover { color: var(--dt-text); }
+.dt-tab.active { color: var(--dt-text); border-bottom-color: var(--dt-blue); background: var(--dt-tab-active); }
+.dt-tab-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  flex-shrink: 0;
+}
+.dt-conn-dot { width: 6px; height: 6px; border-radius: 50%; background: #98C379; flex-shrink: 0; }
+.dt-conn-text { font-family: var(--dt-font); font-size: 11px; color: var(--dt-text-dim); }
+.dt-exit-btn {
+  font-family: var(--dt-font);
+  font-size: 11px;
+  color: var(--dt-red);
+  background: transparent;
+  border: 1px solid var(--dt-red);
+  border-radius: 4px;
+  padding: 3px 10px;
+  cursor: pointer;
+  margin-left: 8px;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.dt-exit-btn:hover { background: rgba(224, 108, 117, 0.1); }
+.dt-flutter-icon { width: 14px; height: 14px; flex-shrink: 0; }
+@media (max-width: 1199px) {
+  .dt-exit-btn-full { display: none; }
+}
+
+/* ---------- Widget Tree Panel ---------- */
+.dt-tree-panel {
+  background: var(--dt-sidebar-bg);
+  border-right: 1px solid var(--dt-border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.dt-panel-header {
+  height: 32px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--dt-border);
+}
+.dt-panel-title {
+  font-family: var(--dt-font);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--dt-text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+.dt-panel-action {
+  font-size: 14px;
+  color: var(--dt-text-dim);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  line-height: 1;
+}
+.dt-tree-search-wrap { position: relative; margin: 4px 8px 8px; flex-shrink: 0; }
+.dt-tree-search-icon {
+  position: absolute;
+  left: 8px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  pointer-events: none;
+  color: var(--dt-text-dim);
+}
+.dt-tree-search {
+  display: block;
+  width: 100%;
+  padding: 5px 8px 5px 26px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid #3E4451;
+  border-radius: 4px;
+  font-family: var(--dt-font);
+  font-size: 11px;
+  color: var(--dt-text);
+  outline: none;
+  box-sizing: border-box;
+}
+.dt-tree-search::placeholder { color: var(--dt-text-dim); }
+.dt-tree-body { flex: 1; overflow-y: auto; overflow-x: hidden; }
+
+/* Tree node — strict single-line layout */
+.tree-node {
+  height: 26px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  font-family: var(--dt-font);
+  font-size: 12px;
+  padding-right: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  position: relative;
+  transition: background 0.1s;
+}
+.tree-node:hover  { background: rgba(97, 175, 239, 0.06); }
+.tree-node.active {
+  background: rgba(97, 175, 239, 0.12);
+  border-left: 2px solid var(--dt-blue);
+}
+.tree-node.active .tree-node-name { font-weight: 600; }
+
+/* Fixed-width arrow column */
+.tree-node-toggle {
+  width: 16px;
+  flex-shrink: 0;
+  text-align: center;
+  font-size: 9px;
+  color: var(--dt-text-dim);
+  line-height: 1;
+}
+
+/* Node content — truncates if too long */
+.tree-node-content {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+}
+.tree-node-name  { color: var(--dt-blue); font-weight: 600; flex-shrink: 0; }
+.tree-node-paren { color: var(--dt-text-dim); flex-shrink: 0; }
+.tree-node-args  {
+  color: var(--dt-orange);
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+/* Indent guide lines — faint vertical rules per level */
+.tree-node-guide {
+  display: inline-block;
+  width: 12px;
+  flex-shrink: 0;
+  position: relative;
+  align-self: stretch;
+}
+.tree-node-guide::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 0; bottom: 0;
+  width: 1px;
+  background: rgba(62, 68, 81, 0.6);
+}
+
+/* ---------- Properties Panel ---------- */
+.dt-props-panel {
+  background: var(--dt-sidebar-bg);
+  border-left: 1px solid var(--dt-border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.dt-props-body { flex: 1; overflow-y: auto; padding-bottom: 12px; }
+.dt-props-section-title {
+  font-family: var(--dt-font);
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--dt-text-dim);
+  padding: 12px 12px 6px;
+}
+.dt-prop-row {
+  display: flex;
+  align-items: flex-start;
+  padding: 2px 12px;
+  font-family: var(--dt-font);
+  font-size: 12px;
+  line-height: 1.7;
+}
+.dt-prop-key   { color: var(--dt-orange); min-width: 110px; flex-shrink: 0; }
+.dt-prop-sep   { color: var(--dt-text); margin: 0 6px; }
+.dt-prop-val   { color: var(--dt-green); }
+.dt-prop-val.type-bool   { color: var(--dt-purple); }
+.dt-prop-val.type-num    { color: var(--dt-yellow); }
+.dt-prop-val.type-enum   { color: var(--dt-blue); }
+.dt-prop-val.type-ref    { color: var(--dt-blue); }
+.dt-prop-val.type-live   { color: var(--dt-red); display: flex; align-items: center; gap: 4px; }
+.dt-prop-divider { height: 1px; background: var(--dt-border); margin: 8px 12px; }
+.dt-props-hint { font-family: var(--dt-font); font-size: 11px; font-style: italic; color: var(--dt-text-dim); padding: 10px 12px; }
+@keyframes live-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+.dt-live-dot {
+  display: inline-block;
+  width: 5px; height: 5px;
+  background: #E06C75;
+  border-radius: 50%;
+  animation: live-pulse 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+/* ---------- Debug Console ---------- */
+.dt-console {
+  flex-shrink: 0;
+  height: 180px;
+  background: #0D1117;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.dt-console.collapsed { height: 0; }
+.dt-console-header {
+  height: 28px;
+  flex-shrink: 0;
+  background: #161B22;
+  border-top: 1px solid var(--dt-border);
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  gap: 8px;
+}
+.dt-console-label { font-family: var(--dt-font); font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--dt-text-dim); flex-shrink: 0; }
+.dt-console-filters { display: flex; gap: 4px; align-items: center; }
+.dt-filter-pill {
+  font-family: var(--dt-font);
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  color: var(--dt-text-dim);
+  background: transparent;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+  user-select: none;
+}
+.dt-filter-pill.active { background: rgba(97,175,239,0.15); color: #61AFEF; border-color: rgba(97,175,239,0.3); }
+.dt-console-spacer { flex: 1; }
+.dt-console-clear { font-size: 13px; color: var(--dt-text-dim); cursor: pointer; background: none; border: none; padding: 0; line-height: 1; transition: color 0.15s; }
+.dt-console-clear:hover { color: var(--dt-text); }
+.dt-console-toggle { font-size: 11px; color: var(--dt-text-dim); cursor: pointer; background: none; border: none; padding: 0 2px; line-height: 1; transition: color 0.15s; }
+.dt-console-toggle:hover { color: var(--dt-text); }
+.dt-console-body { flex: 1; overflow-y: auto; padding: 4px 0; font-family: var(--dt-font); font-size: 12px; line-height: 1.6; }
+.dt-log-entry { display: flex; align-items: flex-start; padding: 1px 12px; gap: 8px; }
+.dt-log-entry:hover { background: rgba(255,255,255,0.03); }
+.dt-log-entry.hidden { display: none; }
+.dt-log-level { width: 76px; flex-shrink: 0; font-weight: 500; }
+.dt-log-level.info    { color: #56B6C2; }
+.dt-log-level.debug   { color: #5C6370; }
+.dt-log-level.warning { color: #E5C07B; }
+.dt-log-level.error   { color: #E06C75; }
+.dt-log-source  { color: var(--dt-text-dim); flex-shrink: 0; }
+.dt-log-message { color: var(--dt-text); flex: 1; }
+.dt-log-time    { color: var(--dt-text-dark); font-size: 10px; flex-shrink: 0; margin-left: auto; }
+.dt-log-command { display: block; padding: 1px 12px; color: var(--dt-orange); font-family: var(--dt-font); font-size: 12px; }
+
+/* ---------- Performance Tab ---------- */
+.dt-perf-view { flex: 1; overflow-y: auto; background: var(--dt-bg); padding: 28px 32px; }
+.dt-perf-title { font-family: var(--dt-font); font-size: 12px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--dt-text-dim); }
+.dt-perf-subtitle { font-family: var(--dt-font); font-size: 11px; color: #3E4451; margin-top: 4px; margin-bottom: 28px; }
+.dt-flame-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.dt-flame-label { width: 200px; flex-shrink: 0; font-family: var(--dt-font); font-size: 11px; color: var(--dt-text); text-align: right; }
+.dt-flame-track { flex: 1; height: 18px; background: #21252B; border-radius: 2px; overflow: hidden; }
+.dt-flame-fill { height: 100%; border-radius: 2px; width: 0%; transition: width 0.8s ease; }
+.dt-flame-fps { width: 48px; flex-shrink: 0; font-family: var(--dt-font); font-size: 10px; text-align: right; }
+.dt-perf-footer { font-family: var(--dt-font); font-size: 12px; color: #3E4451; font-style: italic; margin-top: 28px; line-height: 1.8; }
+
+/* ---------- Main Content Area ---------- */
+.dt-content-area { flex: 1; overflow-y: auto; position: relative; background: var(--bg-primary); }
+
+/* ---------- Bounding Box Overlay ---------- */
+.dt-bbox-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 10; }
+.dt-bbox { position: absolute; border: 1.5px solid var(--dt-bound-border); border-radius: 2px; background: var(--dt-bound-bg); pointer-events: none; opacity: 0; transition: opacity 0.15s ease; }
+.dt-bbox.visible { opacity: 1; }
+.dt-bbox-label { position: absolute; top: -19px; left: -1px; background: var(--dt-blue); color: #000; font-family: var(--dt-font); font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 3px 3px 0 0; white-space: nowrap; }
+
+/* ---------- Section Annotation Labels ---------- */
+.dt-section-label { display: block; font-family: var(--dt-font); font-size: 10px; color: var(--dt-text-dim); margin-bottom: 8px; letter-spacing: 0.3px; }
+
+/* ---------- Git Commit Badges ---------- */
+.dt-commit-badge { font-family: var(--dt-font); font-size: 10px; color: var(--dt-text-dim); margin-bottom: 4px; display: block; }
+.dt-commit-hash { color: var(--dt-orange); }
+
+/* ---------- Mobile DevTools ---------- */
+
+/* Hide mobile tab bar on desktop by default */
+.dt-mobile-tabs { display: none; }
+
+@media (max-width: 1023px) {
+  .devtools-main-row { display: block; flex: 1; overflow: hidden; }
+  .dt-mobile-zone { width: 100%; height: calc(100vh - 88px); overflow-y: auto; display: none; }
+  .dt-mobile-zone.active { display: block; }
+  .dt-mobile-tabs { position: fixed; bottom: 0; left: 0; right: 0; height: 52px; background: var(--dt-tab-bg); border-top: 1px solid var(--dt-border); display: flex; z-index: 600; }
+  .dt-mobile-tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; border-top: 2px solid transparent; transition: border-color 0.15s; }
+  .dt-mobile-tab.active { border-top-color: var(--dt-blue); }
+  .dt-mobile-tab-icon  { font-size: 16px; }
+  .dt-mobile-tab-label { font-family: var(--dt-font); font-size: 9px; color: var(--dt-text-dim); }
+  .dt-mobile-tab.active .dt-mobile-tab-label { color: var(--dt-text); }
+  .tree-node { height: 32px; }
+  .dt-console-filters { overflow-x: auto; flex-wrap: nowrap; }
+  .dt-tab-bar-tabs { display: none; }
+  .devtools-main-row { border-bottom: none; }
+}

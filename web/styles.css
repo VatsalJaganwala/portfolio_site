@@ -1,5 +1,5 @@
-/* ================================================================
-   PORTFOLIO — TERMINAL BRUTALIST DESIGN SYSTEM
+﻿/* ================================================================
+   PORTFOLIO ΓÇö TERMINAL BRUTALIST DESIGN SYSTEM
    ================================================================ */
 
 /* ---------- CSS Custom Properties ---------- */
@@ -156,7 +156,7 @@ img { max-width: 100%; display: block; }
   text-decoration: none;
 }
 .open-to-work-pill::before {
-  content: '●';
+  content: 'ΓùÅ';
   font-size: 8px;
   animation: pulse 2s ease infinite;
 }
@@ -615,7 +615,7 @@ img { max-width: 100%; display: block; }
   line-height: 1.6;
 }
 .timeline-resp-item::before {
-  content: '—';
+  content: 'ΓÇö';
   color: var(--accent-green);
   flex-shrink: 0;
   font-family: 'JetBrains Mono', monospace;
@@ -663,7 +663,7 @@ img { max-width: 100%; display: block; }
   padding: 3px 0;
 }
 .os-card-feature::before {
-  content: '·';
+  content: '┬╖';
   color: var(--accent-green);
   flex-shrink: 0;
   font-weight: bold;
@@ -735,7 +735,7 @@ img { max-width: 100%; display: block; }
   gap: 8px;
 }
 .achievement-card-title::before {
-  content: '◆';
+  content: 'Γùå';
   color: var(--accent-green);
   font-size: 10px;
 }

@@ -6,11 +6,15 @@ import 'cta_button.dart';
 
 class ProjectCard extends StatelessComponent {
   final Project project;
-  const ProjectCard({required this.project, super.key});
+  final int index;
+  const ProjectCard({required this.project, required this.index, super.key});
 
   @override
   Component build(BuildContext context) {
-    return div(classes: 'card project-card', [
+    return div(
+      id: 'project-$index',
+      classes: 'card project-card',
+      [
       // Platform label
       div(classes: 'project-platform', [.text(project.platformLabel)]),
 

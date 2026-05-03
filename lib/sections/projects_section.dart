@@ -18,14 +18,13 @@ class ProjectsSection extends StatelessComponent {
         heading: 'Featured Work.',
         children: [
           div(classes: 'projects-grid', [
-            // Pair projects in rows of 2
             for (int i = 0; i < projects.length; i += 2)
               i + 1 < projects.length
                   ? div(classes: 'project-row', [
-                      ProjectCard(project: projects[i]),
-                      ProjectCard(project: projects[i + 1]),
+                      ProjectCard(project: projects[i],     index: i + 1),
+                      ProjectCard(project: projects[i + 1], index: i + 2),
                     ])
-                  : ProjectCard(project: projects[i]),
+                  : ProjectCard(project: projects[i], index: i + 1),
           ]),
         ],
       ),
