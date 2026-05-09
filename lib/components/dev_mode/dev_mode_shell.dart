@@ -57,21 +57,22 @@ class DevModeShell extends StatelessComponent {
 
         // Mobile-only bottom tab bar (hidden on desktop via CSS)
         div(classes: 'dt-mobile-tabs', [
-          _mobileTab('🌳', 'Tree', 'tree'),
-          _mobileTab('📱', 'UI', 'ui'),
-          _mobileTab('⚙️', 'Props', 'props'),
-          _mobileTab('🖥', 'Console', 'console'),
+          _mobileTab('Tree', 'tree'),
+          _mobileTab('UI', 'ui'),
+          _mobileTab('Props', 'props'),
+          _mobileTab('Console', 'console'),
         ]),
       ],
     );
   }
 
-  Component _mobileTab(String icon, String label, String zone) {
+  Component _mobileTab(String label, String zone) {
     return div(
       classes: 'dt-mobile-tab${zone == 'ui' ? ' active' : ''}',
       attributes: {'data-zone': zone},
       [
-        span(classes: 'dt-mobile-tab-icon', [.text(icon)]),
+        // Icon: a plain div styled with CSS mask-image SVG (see devtools.css)
+        div(classes: 'dt-mobile-tab-icon dt-tab-icon-$zone', []),
         span(classes: 'dt-mobile-tab-label', [.text(label)]),
       ],
     );

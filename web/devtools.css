@@ -175,6 +175,9 @@
   display: flex;
   flex-direction: column;
   background: var(--dt-bg);
+  /* Animation applied via .entering class added by JS on show */
+}
+.devtools-shell.entering {
   animation: devtools-slide-in 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 @keyframes devtools-slide-in {
@@ -197,14 +200,23 @@
   border-bottom: 1px solid var(--dt-border);
   min-height: 0;
 }
-/* On desktop, zone wrappers are transparent grid children */
-.devtools-main-row > .dt-mobile-zone {
-  display: contents;
-  overflow: hidden;
+/* On desktop only: zone wrappers are transparent grid children */
+@media (min-width: 1024px) {
+  .devtools-main-row > .dt-mobile-zone {
+    display: contents;
+  }
 }
-/* Console zone sits outside the grid — always visible on desktop */
-.devtools-shell > .dt-mobile-zone[data-zone="console"] {
-  display: block;
+/* Sidebar panels need overflow:hidden so they don't blow out the grid.
+   The content area must keep overflow-y:auto — target only the panels. */
+.dt-tree-panel,
+.dt-props-panel {
+  min-height: 0;
+}
+/* Console zone sits outside the grid — always visible on desktop only */
+@media (min-width: 1024px) {
+  .devtools-shell > .dt-mobile-zone[data-zone="console"] {
+    display: block;
+  }
 }
 .devtools-panel { overflow-y: auto; height: 100%; }
 .devtools-shell ::-webkit-scrollbar        { width: 6px; }
@@ -456,14 +468,10 @@
 /* ---------- Debug Console ---------- */
 .dt-console {
   flex-shrink: 0;
-  height: 180px;
-  background: #0D1117;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  transition: height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Height controlled by .dt-console-body transition, not the outer container */
 }
-.dt-console.collapsed { height: 0; }
 .dt-console-header {
   height: 28px;
   flex-shrink: 0;
@@ -473,6 +481,16 @@
   align-items: center;
   padding: 0 10px;
   gap: 8px;
+  /* Header is ALWAYS visible — never collapses */
+}
+.dt-console-body-wrap {
+  height: 152px; /* 180px total - 28px header */
+  overflow: hidden;
+  transition: height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  background: #0D1117;
+}
+.dt-console-body-wrap.collapsed {
+  height: 0;
 }
 .dt-console-label { font-family: var(--dt-font); font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--dt-text-dim); flex-shrink: 0; }
 .dt-console-filters { display: flex; gap: 4px; align-items: center; }
@@ -494,7 +512,7 @@
 .dt-console-clear:hover { color: var(--dt-text); }
 .dt-console-toggle { font-size: 11px; color: var(--dt-text-dim); cursor: pointer; background: none; border: none; padding: 0 2px; line-height: 1; transition: color 0.15s; }
 .dt-console-toggle:hover { color: var(--dt-text); }
-.dt-console-body { flex: 1; overflow-y: auto; padding: 4px 0; font-family: var(--dt-font); font-size: 12px; line-height: 1.6; }
+.dt-console-body { height: 152px; overflow-y: auto; padding: 4px 0; font-family: var(--dt-font); font-size: 12px; line-height: 1.6; }
 .dt-log-entry { display: flex; align-items: flex-start; padding: 1px 12px; gap: 8px; }
 .dt-log-entry:hover { background: rgba(255,255,255,0.03); }
 .dt-log-entry.hidden { display: none; }
@@ -509,7 +527,18 @@
 .dt-log-command { display: block; padding: 1px 12px; color: var(--dt-orange); font-family: var(--dt-font); font-size: 12px; }
 
 /* ---------- Performance Tab ---------- */
-.dt-perf-view { flex: 1; overflow-y: auto; background: var(--dt-bg); padding: 28px 32px; }
+/* Perf view overlays the main row — positioned absolute within the shell flex column */
+.dt-perf-view {
+  display: none;
+  position: absolute;
+  top: 36px; /* below tab bar */
+  left: 0; right: 0;
+  bottom: 180px; /* above console (28px header + 152px body) */
+  overflow-y: auto;
+  background: var(--dt-bg);
+  padding: 28px 32px;
+  z-index: 5;
+}
 .dt-perf-title { font-family: var(--dt-font); font-size: 12px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--dt-text-dim); }
 .dt-perf-subtitle { font-family: var(--dt-font); font-size: 11px; color: #3E4451; margin-top: 4px; margin-bottom: 28px; }
 .dt-flame-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
@@ -524,9 +553,30 @@
 
 /* ---------- Bounding Box Overlay ---------- */
 .dt-bbox-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 10; }
-.dt-bbox { position: absolute; border: 1.5px solid var(--dt-bound-border); border-radius: 2px; background: var(--dt-bound-bg); pointer-events: none; opacity: 0; transition: opacity 0.15s ease; }
-.dt-bbox.visible { opacity: 1; }
-.dt-bbox-label { position: absolute; top: -19px; left: -1px; background: var(--dt-blue); color: #000; font-family: var(--dt-font); font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 3px 3px 0 0; white-space: nowrap; }
+.dt-bbox {
+  position: absolute;
+  border: 1.5px solid var(--dt-bound-border);
+  border-radius: 2px;
+  background: var(--dt-bound-bg);
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.99);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.dt-bbox.visible { opacity: 1; transform: scale(1); }
+.dt-bbox-label {
+  position: absolute;
+  top: -19px;
+  left: -1px;
+  background: var(--dt-blue);
+  color: #000;
+  font-family: var(--dt-font);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 3px 3px 0 0;
+  white-space: nowrap;
+}
 
 /* ---------- Section Annotation Labels ---------- */
 .dt-section-label { display: block; font-family: var(--dt-font); font-size: 10px; color: var(--dt-text-dim); margin-bottom: 8px; letter-spacing: 0.3px; }
@@ -535,23 +585,296 @@
 .dt-commit-badge { font-family: var(--dt-font); font-size: 10px; color: var(--dt-text-dim); margin-bottom: 4px; display: block; }
 .dt-commit-hash { color: var(--dt-orange); }
 
+/* ---------- Phase 2: Project card dev-mode hover ring ---------- */
+.dt-content-area .project-card:hover {
+  outline: 1.5px solid rgba(97, 175, 239, 0.4);
+  outline-offset: 2px;
+}
+
+/* ================================================================
+   PHASE 3 — ADVANCED FEATURES
+   ================================================================ */
+
+/* ---------- Phase 3: Widget Tree Search ---------- */
+.dt-search-clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--dt-text-dim);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+  display: none; /* shown by JS when query is non-empty */
+  transition: color 0.15s;
+}
+.dt-search-clear:hover { color: var(--dt-text); }
+.dt-search-clear.visible { display: block; }
+
+mark.dt-search-highlight {
+  background: rgba(97, 175, 239, 0.3);
+  color: var(--dt-blue);
+  border-radius: 2px;
+  padding: 0 1px;
+  font-style: normal;
+}
+
+/* ---------- Phase 3: Hot Reload Flash ---------- */
+@keyframes dt-hot-reload-flash {
+  0%   { background-color: var(--bg-primary); }
+  20%  { background-color: rgba(229, 192, 123, 0.12); }
+  100% { background-color: var(--bg-primary); }
+}
+.dt-hot-reload-flash {
+  animation: dt-hot-reload-flash 0.4s ease forwards;
+}
+
+/* ---------- Phase 3: Keyboard Shortcuts Overlay ---------- */
+.dt-shortcuts-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 200;
+  background: rgba(13, 17, 23, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  animation: dt-shortcuts-fade-in 0.15s ease forwards;
+}
+@keyframes dt-shortcuts-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.dt-shortcuts-panel {
+  background: var(--dt-sidebar-bg);
+  border: 1px solid var(--dt-border);
+  border-radius: 8px;
+  min-width: 320px;
+  max-width: 400px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+.dt-shortcuts-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--dt-border);
+  background: var(--dt-tab-bg);
+}
+.dt-shortcuts-title {
+  font-family: var(--dt-font);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--dt-text-dim);
+}
+.dt-shortcuts-close {
+  background: none;
+  border: none;
+  color: var(--dt-text-dim);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s;
+}
+.dt-shortcuts-close:hover { color: var(--dt-text); }
+.dt-shortcuts-list {
+  padding: 8px 0;
+}
+.dt-shortcut-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 16px;
+  font-family: var(--dt-font);
+  font-size: 12px;
+}
+.dt-shortcut-row:hover { background: var(--dt-hover-bg); }
+kbd.dt-shortcut-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  padding: 2px 6px;
+  background: var(--dt-bg);
+  border: 1px solid var(--dt-border);
+  border-radius: 4px;
+  font-family: var(--dt-font);
+  font-size: 11px;
+  color: var(--dt-orange);
+  flex-shrink: 0;
+}
+.dt-shortcut-desc {
+  color: var(--dt-text);
+}
+.dt-shortcuts-footer {
+  padding: 8px 16px 12px;
+  font-family: var(--dt-font);
+  font-size: 10px;
+  color: var(--dt-text-dim);
+  font-style: italic;
+  border-top: 1px solid var(--dt-border);
+}
+
 /* ---------- Mobile DevTools ---------- */
+
+/* Hide the site's mobile bottom nav when DevTools shell is active */
+body.devmode-active .bottom-nav {
+  display: none !important;
+}
 
 /* Hide mobile tab bar on desktop by default */
 .dt-mobile-tabs { display: none; }
 
 @media (max-width: 1023px) {
-  .devtools-main-row { display: block; flex: 1; overflow: hidden; }
-  .dt-mobile-zone { width: 100%; height: calc(100vh - 88px); overflow-y: auto; display: none; }
-  .dt-mobile-zone.active { display: block; }
-  .dt-mobile-tabs { position: fixed; bottom: 0; left: 0; right: 0; height: 52px; background: var(--dt-tab-bg); border-top: 1px solid var(--dt-border); display: flex; z-index: 600; }
-  .dt-mobile-tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; border-top: 2px solid transparent; transition: border-color 0.15s; }
-  .dt-mobile-tab.active { border-top-color: var(--dt-blue); }
-  .dt-mobile-tab-icon  { font-size: 16px; }
-  .dt-mobile-tab-label { font-family: var(--dt-font); font-size: 9px; color: var(--dt-text-dim); }
+  /* Shell becomes a flex column filling the full viewport */
+  .devtools-shell {
+    flex-direction: column;
+  }
+
+  /* Main row: single-column block, takes all remaining height between
+     the top tab bar (36px) and the bottom tab bar (52px) */
+  .devtools-main-row {
+    display: block;          /* not grid */
+    flex: 1;                 /* fill remaining shell height */
+    overflow: hidden;
+    border-bottom: none;
+    min-height: 0;
+    position: relative;
+  }
+
+  /* On mobile, zone wrappers are real block elements (not display:contents).
+     Override the desktop display:contents rule. */
+  .devtools-main-row > .dt-mobile-zone {
+    display: none;           /* hidden by default */
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+  }
+  .devtools-main-row > .dt-mobile-zone.active {
+    display: block;          /* only the active zone is visible */
+  }
+
+  /* Console zone lives outside the main row on desktop.
+     On mobile it's also a zone tab — hide it by default,
+     show only when active. Override the desktop display:block rule. */
+  .devtools-shell > .dt-mobile-zone[data-zone="console"] {
+    display: none;
+    position: fixed;
+    top: 36px;    /* below top tab bar */
+    left: 0; right: 0;
+    bottom: 52px; /* above bottom tab bar */
+    overflow-y: auto;
+    z-index: 10;
+  }
+  .devtools-shell > .dt-mobile-zone[data-zone="console"].active {
+    display: block;
+  }
+
+  /* Bottom tab bar */
+  .dt-mobile-tabs {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 52px;
+    background: var(--dt-tab-bg);
+    border-top: 1px solid var(--dt-border);
+    display: flex;
+    z-index: 700;          /* above shell (500) and site bottom-nav (1000 — hidden below) */
+    flex-shrink: 0;
+  }
+  .dt-mobile-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    cursor: pointer;
+    border-top: 2px solid transparent;
+    transition: border-color 0.15s, background 0.15s;
+    padding: 6px 0;
+    background: var(--dt-tab-bg);  /* explicit bg so it's never transparent */
+  }
+  .dt-mobile-tab.active {
+    border-top-color: var(--dt-blue);
+    background: var(--dt-tab-active);
+  }
+  .dt-mobile-tab-icon  {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    /* Color is set via background-color; mask-image provides the shape */
+    background-color: var(--dt-text-dim);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: 20px 20px;
+    mask-size: 20px 20px;
+    transition: background-color 0.15s;
+  }
+  .dt-mobile-tab.active .dt-mobile-tab-icon {
+    background-color: var(--dt-blue);
+  }
+
+  /* ── Tree icon: node hierarchy ── */
+  .dt-tab-icon-tree {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='4' r='2'/%3E%3Ccircle cx='5' cy='20' r='2'/%3E%3Ccircle cx='19' cy='20' r='2'/%3E%3Cline x1='12' y1='6' x2='12' y2='12'/%3E%3Cline x1='12' y1='12' x2='5' y2='18'/%3E%3Cline x1='12' y1='12' x2='19' y2='18'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='4' r='2'/%3E%3Ccircle cx='5' cy='20' r='2'/%3E%3Ccircle cx='19' cy='20' r='2'/%3E%3Cline x1='12' y1='6' x2='12' y2='12'/%3E%3Cline x1='12' y1='12' x2='5' y2='18'/%3E%3Cline x1='12' y1='12' x2='19' y2='18'/%3E%3C/svg%3E");
+  }
+
+  /* ── UI icon: mobile phone frame ── */
+  .dt-tab-icon-ui {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='2' width='14' height='20' rx='2'/%3E%3Ccircle cx='12' cy='18' r='1' fill='black' stroke='none'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='2' width='14' height='20' rx='2'/%3E%3Ccircle cx='12' cy='18' r='1' fill='black' stroke='none'/%3E%3C/svg%3E");
+  }
+
+  /* ── Props icon: horizontal sliders ── */
+  .dt-tab-icon-props {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'%3E%3Cline x1='4' y1='6' x2='20' y2='6'/%3E%3Cline x1='4' y1='12' x2='20' y2='12'/%3E%3Cline x1='4' y1='18' x2='20' y2='18'/%3E%3Ccircle cx='8' cy='6' r='2' fill='black' stroke='none'/%3E%3Ccircle cx='16' cy='12' r='2' fill='black' stroke='none'/%3E%3Ccircle cx='10' cy='18' r='2' fill='black' stroke='none'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'%3E%3Cline x1='4' y1='6' x2='20' y2='6'/%3E%3Cline x1='4' y1='12' x2='20' y2='12'/%3E%3Cline x1='4' y1='18' x2='20' y2='18'/%3E%3Ccircle cx='8' cy='6' r='2' fill='black' stroke='none'/%3E%3Ccircle cx='16' cy='12' r='2' fill='black' stroke='none'/%3E%3Ccircle cx='10' cy='18' r='2' fill='black' stroke='none'/%3E%3C/svg%3E");
+  }
+
+  /* ── Console icon: terminal window with prompt ── */
+  .dt-tab-icon-console {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='3' width='20' height='18' rx='2'/%3E%3Cpolyline points='8,9 12,13 8,17'/%3E%3Cline x1='14' y1='17' x2='18' y2='17'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='3' width='20' height='18' rx='2'/%3E%3Cpolyline points='8,9 12,13 8,17'/%3E%3Cline x1='14' y1='17' x2='18' y2='17'/%3E%3C/svg%3E");
+  }
+  .dt-mobile-tab-label {
+    font-family: var(--dt-font);
+    font-size: 9px;
+    color: var(--dt-text-dim);
+    display: block;
+    line-height: 1;
+  }
+  .dt-mobile-tab.active .dt-mobile-tab-icon  { color: var(--dt-text); }
   .dt-mobile-tab.active .dt-mobile-tab-label { color: var(--dt-text); }
+
+  /* Larger touch targets for tree nodes */
   .tree-node { height: 32px; }
+
+  /* Console filters scroll horizontally */
   .dt-console-filters { overflow-x: auto; flex-wrap: nowrap; }
+
+  /* Hide desktop top tab bar tabs on mobile */
   .dt-tab-bar-tabs { display: none; }
-  .devtools-main-row { border-bottom: none; }
+
+  /* Console body fills available height on mobile */
+  .dt-console-body-wrap { height: calc(100vh - 88px - 28px); }
+  .dt-console-body      { height: calc(100vh - 88px - 28px); }
+
+  /* Perf view fills the space above the bottom tab bar */
+  .dt-perf-view { top: 36px; bottom: 52px; }
+
+  /* Shortcuts panel: full-width on small screens */
+  .dt-shortcuts-panel { min-width: unset; width: calc(100vw - 32px); }
 }

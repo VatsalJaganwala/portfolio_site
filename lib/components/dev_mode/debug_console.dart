@@ -8,6 +8,7 @@ class DebugConsole extends StatelessComponent {
   @override
   Component build(BuildContext context) {
     return div(id: 'dt-console', classes: 'dt-console', [
+      // Header is ALWAYS visible — never collapses with the body
       div(classes: 'dt-console-header', [
         span(classes: 'dt-console-label', [.text('Console')]),
         div(classes: 'dt-console-filters', [
@@ -22,7 +23,10 @@ class DebugConsole extends StatelessComponent {
         button(id: 'dt-console-clear', classes: 'dt-console-clear', [.text('🗑')]),
         button(id: 'dt-console-toggle', classes: 'dt-console-toggle', [.text('▼')]),
       ]),
-      div(id: 'dt-console-body', classes: 'dt-console-body', []),
+      // Body wrapper — this collapses, not the header
+      div(id: 'dt-console-body-wrap', classes: 'dt-console-body-wrap', [
+        div(id: 'dt-console-body', classes: 'dt-console-body', []),
+      ]),
     ]);
   }
 }
