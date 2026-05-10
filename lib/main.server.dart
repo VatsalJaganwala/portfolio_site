@@ -4,28 +4,76 @@ import 'package:jaspr/dom.dart';
 
 import 'app.dart';
 import 'data/portfolio_data.dart';
+import 'models/portfolio_data.dart';
 
 void main() {
   Jaspr.initializeApp();
 
   final pi = portfolio.personalInformation;
 
+  final siteUrl = pi.siteUrl;
+
+  // Meta description: 140–155 chars, includes "Flutter Developer from Surat", ends with CTA.
+  // Built from portfolio data — name and location come from personalInformation.
+  final locationParts = pi.location.split(',').map((part) => part.trim()).toList();
+  final city = locationParts.isNotEmpty ? locationParts.first : pi.location;
+  final metaDescription =
+      '${pi.name} — ${pi.title} from $city. '
+      'Cross-platform apps for Android, iOS & Web. '
+      'Explore my projects.';
+
+  // Keywords: name + title + top technical skills (all from portfolio_data.dart).
+  final keywords = [
+    pi.name,
+    pi.title,
+    ...portfolio.skills.technicalSkills,
+    pi.location,
+  ].join(', ');
+
   runApp(Document(
     title: '${pi.name} — ${pi.title}',
+    lang: 'en',
     head: [
       // ── Primary SEO ──────────────────────────────────────────────────────
-      meta(name: 'description', content: portfolio.summary),
+      meta(name: 'description', content: metaDescription),
       meta(name: 'author', content: pi.name),
-      meta(
-        name: 'keywords',
-        content: ([pi.title] + portfolio.skills.technicalSkills.take(5).toList()).join(', '),
-      ),
+      meta(name: 'keywords', content: keywords),
       meta(name: 'viewport', content: 'width=device-width, initial-scale=1.0'),
+      meta(name: 'robots', content: 'index, follow'),
+      // ── Canonical URL ────────────────────────────────────────────────────
+      link(href: siteUrl, rel: 'canonical'),
+      // ── Favicon ──────────────────────────────────────────────────────────
+      link(href: '/favicon.ico', rel: 'icon', attributes: {'type': 'image/x-icon'}),
+      link(href: '/favicon-32x32.png', rel: 'icon', attributes: {'type': 'image/png', 'sizes': '32x32'}),
+      link(href: '/favicon-16x16.png', rel: 'icon', attributes: {'type': 'image/png', 'sizes': '16x16'}),
+      link(href: '/apple-touch-icon.png', rel: 'apple-touch-icon', attributes: {'sizes': '180x180'}),
+      link(href: '/site.webmanifest', rel: 'manifest'),
       // ── Open Graph ───────────────────────────────────────────────────────
       meta(attributes: {'property': 'og:type', 'content': 'website'}),
       meta(attributes: {'property': 'og:title', 'content': '${pi.name} — ${pi.title}'}),
-      meta(attributes: {'property': 'og:description', 'content': portfolio.summary}),
+      meta(attributes: {'property': 'og:description', 'content': metaDescription}),
       meta(attributes: {'property': 'og:site_name', 'content': '${pi.name} Portfolio'}),
+      meta(attributes: {'property': 'og:url', 'content': siteUrl}),
+      meta(attributes: {'property': 'og:image', 'content': pi.ogImage}),
+      meta(attributes: {'property': 'og:image:alt', 'content': '${pi.name} — ${pi.title}'}),
+      meta(attributes: {'property': 'og:image:width', 'content': '1200'}),
+      meta(attributes: {'property': 'og:image:height', 'content': '620'}),
+      // ── Twitter Card ─────────────────────────────────────────────────────
+      meta(name: 'twitter:card', content: 'summary_large_image'),
+      meta(name: 'twitter:title', content: '${pi.name} — ${pi.title}'),
+      meta(name: 'twitter:description', content: metaDescription),
+      meta(name: 'twitter:image', content: pi.ogImage),
+      meta(name: 'twitter:image:alt', content: '${pi.name} — ${pi.title}'),
+      // ── Schema.org Person (JSON-LD) ───────────────────────────────────────
+      script(
+        attributes: {'type': 'application/ld+json'},
+        content: _buildPersonSchema(pi, siteUrl),
+      ),
+      // ── Schema.org SoftwareSourceCode — open-source packages ─────────────
+      script(
+        attributes: {'type': 'application/ld+json'},
+        content: _buildSoftwareSchemas(pi, siteUrl),
+      ),
       // ── Portfolio data for devmode.js ─────────────────────────────────────
       // Embedded as a <meta name="devmode-data"> tag.
       // Jaspr renders <meta> reliably in static mode — unlike script(content:).
@@ -52,7 +100,95 @@ void main() {
   ));
 }
 
-/// Serialises portfolio data to a JSON string for the devmode-data meta tag.
+/// Builds a Schema.org Person JSON-LD structured data block.
+/// All data is sourced from portfolio_data.dart — no hardcoded values.
+/// Helps Google display rich snippets (social links, job title, location).
+String _buildPersonSchema(PersonalInformation pi, String siteUrl) {
+  // Parse "City, Country" from pi.location (e.g. "Surat, India" → "Surat", "IN").
+  // Falls back gracefully if the format differs.
+  final locationParts = pi.location.split(',').map((part) => part.trim()).toList();
+  final city = locationParts.isNotEmpty ? locationParts.first : pi.location;
+  // Map full country name to ISO 3166-1 alpha-2 if known, else use as-is.
+  final rawCountry = locationParts.length > 1 ? locationParts.last : '';
+  final countryCode = _countryCode(rawCountry);
+
+  return jsonEncode({
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    'name': pi.name,
+    'jobTitle': pi.title,
+    'url': siteUrl,
+    'email': 'mailto:${pi.email}',
+    'telephone': pi.phone,
+    'address': {
+      '@type': 'PostalAddress',
+      'addressLocality': city,
+      if (countryCode.isNotEmpty) 'addressCountry': countryCode,
+    },
+    'sameAs': [
+      pi.linkedin,
+      pi.github,
+    ],
+    // Use technical skills from portfolio_data.dart as the knowsAbout list.
+    'knowsAbout': portfolio.skills.technicalSkills,
+  });
+}
+
+/// Builds a JSON-LD @graph of Schema.org SoftwareSourceCode nodes,
+/// one per open-source contribution. Helps Google surface published packages
+/// in search results with author, description, and programming language.
+/// All data sourced from portfolio_data.dart — no hardcoded values.
+String _buildSoftwareSchemas(PersonalInformation pi, String siteUrl) {
+  final items = portfolio.openSourceContributions.map((os) {
+    final pubUrl = 'https://pub.dev/packages/${os.name}';
+    final repoUrl = os.github ?? 'https://github.com/${pi.github.split('/').last}/${os.name}';
+
+    return {
+      '@type': 'SoftwareSourceCode',
+      'name': os.name,
+      'description': os.description,
+      'url': pubUrl,
+      'codeRepository': repoUrl,
+      'programmingLanguage': {
+        '@type': 'ComputerLanguage',
+        'name': 'Dart',
+      },
+      'runtimePlatform': 'Flutter',
+      'author': {
+        '@type': 'Person',
+        'name': pi.name,
+        'url': siteUrl,
+      },
+      'keywords': os.technologiesUsed.join(', '),
+      'featureList': os.keyFeatures,
+      'maintainer': {
+        '@type': 'Person',
+        'name': pi.name,
+      },
+    };
+  }).toList();
+
+  return jsonEncode({
+    '@context': 'https://schema.org',
+    '@graph': items,
+  });
+}
+
+/// Maps common country names to ISO 3166-1 alpha-2 codes.
+/// Add entries here as needed when pi.location changes.
+String _countryCode(String country) {
+  const codes = {
+    'india': 'IN',
+    'united states': 'US',
+    'united kingdom': 'GB',
+    'canada': 'CA',
+    'australia': 'AU',
+    'germany': 'DE',
+  };
+  return codes[country.toLowerCase()] ?? country;
+}
+
+
 /// Uses dart:convert jsonEncode — safe escaping, no manual string building.
 String _buildPortfolioJson() {
   final p = portfolio;

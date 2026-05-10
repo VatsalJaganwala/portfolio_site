@@ -41,11 +41,11 @@ class ContactSection extends StatelessComponent {
       footer(classes: 'footer', [
         div(classes: 'footer-inner', [
           span(classes: 'footer-text', [
-            .text('Built with '),
-            span([.text('<Jaspr />')]),
-            .text(' · Designed from scratch'),
+            // .text('Built with '),
+            // span([.text('<Jaspr />')]),
+            // .text(' · Designed from scratch'),
           ]),
-          span(classes: 'footer-text', [.text('${pi.firstName}.dev · $year')]),
+          span(classes: 'footer-text', [.text('${pi.siteUrl} · $year')]),
         ]),
       ]),
     ]);

@@ -35,6 +35,9 @@ class HeroSection extends StatelessComponent {
                 span(classes: 'hero-name-first', [.text(firstName)]),
                 span(classes: 'hero-name-last', [.text('$lastName.')]),
               ]),
+              // SEO: h2 reinforces title keywords — "Flutter Developer" appears
+              // in both <title> and a heading, closing the coherence gap.
+              h2(classes: 'hero-subtitle', [.text(pi.title)]),
               p(classes: 'hero-subtext', [.text(subHeadline)]),
               div(classes: 'hero-stats', [
                 _stat('$yearsXP+', 'YEARS EXPERIENCE'),

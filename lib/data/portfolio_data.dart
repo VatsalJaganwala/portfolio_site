@@ -10,8 +10,11 @@ const PortfolioData portfolio = PortfolioData(
     email: 'vatsaljaganwala@gmail.com',
     phone: '+917041355506',
     location: 'Surat, India',
-    linkedin: 'https://linkedin.com/vatsaljaganwala',
+    linkedin: 'https://linkedin.com/in/vatsaljaganwala',
     github: 'https://github.com/vatsaljaganwala',
+    siteUrl: 'https://vatsaljaganwalacom.web.app',
+    // OG share image — 1200×620px banner at web/images/ogImage.png.
+    ogImage: 'https://vatsaljaganwalacom.web.app/images/ogImage.png',
     isAvailable: true,
   ),
 

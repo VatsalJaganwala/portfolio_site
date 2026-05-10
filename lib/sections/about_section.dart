@@ -37,8 +37,13 @@ class AboutSection extends StatelessComponent {
       [
         SectionWrapper(
           index: '// 03 · ABOUT',
-          heading: 'About Me.',
+          heading: 'About ${pi.name}.',
           children: [
+            // SEO: explicit subtitle reinforces "Flutter Developer" keyword
+            // under the <h2>, improving title coherence score.
+            p(classes: 'about-role-label', [
+              .text('${pi.title} · ${pi.location}'),
+            ]),
             div(classes: 'two-col-60-40', [
               // Left column
               div([

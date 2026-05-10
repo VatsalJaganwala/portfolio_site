@@ -1,0 +1,7 @@
+# Site URL is managed in lib/data/portfolio_data.dart → personalInformation.siteUrl
+# Update the Sitemap line below whenever siteUrl changes.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://vatsaljaganwalacom.web.app/sitemap.xml

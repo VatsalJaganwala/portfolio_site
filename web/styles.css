@@ -156,7 +156,7 @@ img { max-width: 100%; display: block; }
   text-decoration: none;
 }
 .open-to-work-pill::before {
-  content: 'ΓùÅ';
+  content: '●';
   font-size: 8px;
   animation: pulse 2s ease infinite;
 }
@@ -258,6 +258,17 @@ img { max-width: 100%; display: block; }
 }
 .hero-name-first { color: var(--text-primary); display: block; }
 .hero-name-last  { color: var(--accent-green);  display: block; }
+/* SEO subtitle: visually de-emphasised but present in DOM as <h2> for crawlers */
+.hero-subtitle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--accent-green);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: -16px;
+  margin-bottom: 24px;
+}
 .hero-subtext {
   font-family: 'Inter', sans-serif;
   font-size: 17px;
@@ -495,6 +506,16 @@ img { max-width: 100%; display: block; }
 }
 
 /* ---------- ABOUT SECTION ---------- */
+/* SEO role label: sits below the <h2> heading, reinforces "Flutter Developer" keyword */
+.about-role-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--accent-green);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: -20px;
+  margin-bottom: 28px;
+}
 .about-blockquote {
   border-left: 3px solid var(--accent-green);
   padding-left: 20px;
@@ -615,7 +636,7 @@ img { max-width: 100%; display: block; }
   line-height: 1.6;
 }
 .timeline-resp-item::before {
-  content: 'ΓÇö';
+  content: '—';
   color: var(--accent-green);
   flex-shrink: 0;
   font-family: 'JetBrains Mono', monospace;
@@ -663,7 +684,7 @@ img { max-width: 100%; display: block; }
   padding: 3px 0;
 }
 .os-card-feature::before {
-  content: '┬╖';
+  content: '·';
   color: var(--accent-green);
   flex-shrink: 0;
   font-weight: bold;
@@ -735,7 +756,7 @@ img { max-width: 100%; display: block; }
   gap: 8px;
 }
 .achievement-card-title::before {
-  content: 'Γùå';
+  content: '●';
   color: var(--accent-green);
   font-size: 10px;
 }

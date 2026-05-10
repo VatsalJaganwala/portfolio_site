@@ -10,6 +10,10 @@ class PersonalInformation {
   final String location;
   final String linkedin;
   final String github;
+  final String siteUrl;
+  /// Absolute URL of the Open Graph share image (1200×620px).
+  /// Used for og:image and twitter:image meta tags.
+  final String ogImage;
   /// Whether the developer is currently open to new opportunities.
   /// Drives the status card in the About section and the CTA in Experience.
   final bool isAvailable;
@@ -22,6 +26,8 @@ class PersonalInformation {
     required this.location,
     required this.linkedin,
     required this.github,
+    required this.siteUrl,
+    required this.ogImage,
     this.isAvailable = true,
   });
 

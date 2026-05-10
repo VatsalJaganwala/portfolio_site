@@ -152,6 +152,34 @@
     setTimeout(completeTransition, 4300);
   }
 
+  // ─── Populate DevTools content area ──────────────────────────────────────
+  // Clones the real page content into #dt-content-area at runtime.
+  // This replaces the old approach of pre-rendering a duplicate Jaspr component
+  // tree, which caused duplicate <h1>/<h2> tags in the static HTML.
+  function populateContentArea() {
+    const contentArea = document.getElementById('dt-content-area');
+    if (!contentArea) return;
+
+    // Only clone once per session — re-entry reuses the existing clone.
+    if (contentArea.dataset.populated === 'true') return;
+
+    // The real page content is the first child div of the app root.
+    // It has class 'pt-navbar' and contains all sections.
+    const realContent = document.querySelector('body > div > div.pt-navbar');
+    if (!realContent) return;
+
+    const clone = realContent.cloneNode(true);
+    // Remove any IDs from the clone to avoid duplicate IDs in the DOM.
+    // devmode.js uses scopedById/scopedQuery which search inside #dt-content-area,
+    // so section IDs need to be present — we keep them but prefix with 'dt-'.
+    clone.querySelectorAll('[id]').forEach(el => {
+      el.id = 'dt-' + el.id;
+    });
+
+    contentArea.appendChild(clone);
+    contentArea.dataset.populated = 'true';
+  }
+
   function completeTransition() {
     isTransitioning = false;
     isDevMode = true;
@@ -171,6 +199,11 @@
     // Hide overlay
     const overlay = document.getElementById('flutter-run-overlay');
     if (overlay) overlay.style.display = 'none';
+
+    // Clone real page content into #dt-content-area.
+    // The Dart server no longer pre-renders a duplicate component tree —
+    // we clone the live DOM instead so the static HTML has no duplicate headings.
+    populateContentArea();
 
     // Show shell with entrance animation
     const shell = document.getElementById('devtools-shell');
@@ -732,19 +765,29 @@
       }, 500);
     }
 
-    // Detect active section
+    // Detect active section using scroll-position-aware offsetTop.
+    // getBoundingClientRect() is viewport-relative and changes as you scroll,
+    // making all sections appear equidistant. Instead, accumulate offsetTop
+    // up to the content area to get the true scroll offset of each section.
     const sectionIds = Object.keys(sectionToNodeId);
     let closest = null;
     let minDist = Infinity;
+    const scrollTop = contentArea.scrollTop;
 
     sectionIds.forEach(id => {
       const el = scopedById(id);
       if (!el) return;
-      const rect = el.getBoundingClientRect();
-      // Distance from top of content area viewport
-      const contentRect = contentArea.getBoundingClientRect();
-      const relTop = rect.top - contentRect.top;
-      const dist = Math.abs(relTop - 80); // 80px offset
+
+      // Walk up the offset chain until we reach the content area
+      let offsetTop = 0;
+      let node = el;
+      while (node && node !== contentArea) {
+        offsetTop += node.offsetTop;
+        node = node.offsetParent;
+      }
+
+      // Distance from the current scroll position (with a small top bias)
+      const dist = Math.abs(offsetTop - scrollTop - 80);
       if (dist < minDist) {
         minDist = dist;
         closest = id;
@@ -764,17 +807,23 @@
     const node = document.querySelector(`.tree-node[data-node="${nodeId}"]`);
     if (node) {
       node.classList.add('active');
-      // Scroll tree panel to keep node visible
+      // Scroll tree panel to keep node visible.
+      // Use getBoundingClientRect() so positions are relative to the viewport,
+      // then compare against the treeBody's own rect — works regardless of
+      // how deep the offsetParent chain goes.
       const treeBody = document.querySelector('.dt-tree-body');
       if (treeBody) {
-        const nodeTop = node.offsetTop;
-        const nodeBottom = nodeTop + node.offsetHeight;
-        const bodyTop = treeBody.scrollTop;
-        const bodyBottom = bodyTop + treeBody.clientHeight;
-        if (nodeTop < bodyTop + 20) {
-          treeBody.scrollTo({ top: nodeTop - 20, behavior: 'smooth' });
-        } else if (nodeBottom > bodyBottom - 20) {
-          treeBody.scrollTo({ top: nodeBottom - treeBody.clientHeight + 20, behavior: 'smooth' });
+        const nodeRect = node.getBoundingClientRect();
+        const bodyRect = treeBody.getBoundingClientRect();
+        const nodeTopRel  = nodeRect.top  - bodyRect.top;   // px from visible top of tree
+        const nodeBottomRel = nodeRect.bottom - bodyRect.top;
+
+        if (nodeTopRel < 20) {
+          // Node is above the visible area — scroll up
+          treeBody.scrollBy({ top: nodeTopRel - 20, behavior: 'smooth' });
+        } else if (nodeBottomRel > treeBody.clientHeight - 20) {
+          // Node is below the visible area — scroll down
+          treeBody.scrollBy({ top: nodeBottomRel - treeBody.clientHeight + 20, behavior: 'smooth' });
         }
       }
     }

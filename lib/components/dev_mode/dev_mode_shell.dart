@@ -8,17 +8,21 @@ import 'performance_tab.dart';
 import 'main_content_wrapper.dart';
 
 /// Renders the full DevTools shell layout. All interactivity handled by devmode.js.
+/// portfolioContent is no longer accepted — devmode.js clones the real page
+/// DOM into #dt-content-area at runtime, keeping the static HTML free of
+/// duplicate headings that would confuse SEO crawlers.
 class DevModeShell extends StatelessComponent {
-  final List<Component> portfolioContent;
-
-  const DevModeShell({required this.portfolioContent, super.key});
+  const DevModeShell({super.key});
 
   @override
   Component build(BuildContext context) {
     return div(
       id: 'devtools-shell',
       classes: 'devtools-shell',
-      attributes: {'style': 'display: none'},
+      // aria-hidden prevents crawlers from indexing the duplicate content
+      // inside the DevTools shell (which contains a second copy of the page).
+      // display:none hides it visually until activated by devmode.js.
+      attributes: {'style': 'display: none', 'aria-hidden': 'true'},
       [
         const DevToolsTabBar(),
 
@@ -35,7 +39,7 @@ class DevModeShell extends StatelessComponent {
           div(
             classes: 'dt-mobile-zone active',
             attributes: {'data-zone': 'ui'},
-            [MainContentWrapper(children: portfolioContent)],
+            [const MainContentWrapper()],
           ),
 
           // Zone: props (right panel on desktop, tab on mobile)

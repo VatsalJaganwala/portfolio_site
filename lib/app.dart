@@ -20,25 +20,8 @@ class App extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
-    // portfolioContent is the same section tree passed into the DevTools shell.
-    // It cannot be const because the list is constructed at build time.
-    final portfolioContent = [
-      div(classes: 'pt-navbar', [
-        const NavBar(),
-        const HeroSection(),
-        const ProjectsSection(),
-        const AboutSection(),
-        const SkillsSection(),
-        const ExperienceSection(),
-        const OpenSourceSection(),
-        const EducationSection(),
-        const AchievementsSection(),
-        const ContactSection(),
-      ]),
-    ];
-
     return div([
-      // Normal site content (always in DOM, hidden by devtools-shell overlay)
+      // Normal site content — the single source of truth for all headings.
       div(classes: 'pt-navbar', [
         const NavBar(),
         const HeroSection(),
@@ -51,10 +34,12 @@ class App extends StatelessComponent {
         const AchievementsSection(),
         const ContactSection(),
       ]),
-      // DevMode components (hidden until activated by JS)
+      // DevMode components (hidden until activated by JS).
+      // Content is cloned from the real DOM above by devmode.js — no duplicate
+      // headings are rendered in the static HTML.
       const DevModePill(),
       const FlutterRunOverlay(),
-      DevModeShell(portfolioContent: portfolioContent),
+      const DevModeShell(),
     ]);
   }
 }

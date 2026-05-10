@@ -13,7 +13,7 @@ class DevModePill extends StatelessComponent {
       [
         div(classes: 'debug-pill', [
           div(classes: 'pill-dot', []),
-          span(classes: 'pill-debug-text', [.text('● debug')]),
+          span(classes: 'pill-debug-text', [.text('debug')]),
           div(classes: 'pill-sep', []),
           span(classes: 'pill-version', [.text('v2.3.1+42')]),
           div(classes: 'debug-pill-tooltip', [.text('Open Flutter DevTools')]),
