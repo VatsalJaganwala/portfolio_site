@@ -1,53 +1,42 @@
 import 'package:jaspr/jaspr.dart';
 import 'package:jaspr/dom.dart';
-import '../models/portfolio_data.dart';
+import '../data/portfolio_data.dart';
 
 class NavBar extends StatelessComponent {
-  const NavBar({required this.data, super.key});
-
-  final PortfolioData data;
+  const NavBar({super.key});
 
   @override
   Component build(BuildContext context) {
-    final pi = data.personalInformation;
+    final pi = portfolio.personalInformation;
     final name = pi.name.replaceAll(' ', '_').toLowerCase();
-    final email = pi.email;
 
     return div([
       nav(classes: 'navbar', [
         div(classes: 'navbar-inner', [
-          // Logo
-          a([.text('${name}')], href: '#hero', classes: 'navbar-logo'),
-
-          // Desktop nav links
+          a(href: '#hero', classes: 'navbar-logo', [.text(name)]),
           div(classes: 'navbar-links', [
-            a([.text('work')], href: '#projects', classes: 'nav-link'),
-            a([.text('about')], href: '#about', classes: 'nav-link'),
-            a([.text('experience')], href: '#experience', classes: 'nav-link'),
-            a([.text('contact')], href: '#contact', classes: 'nav-link'),
+            a(href: '#projects', classes: 'nav-link', [.text('work')]),
+            a(href: '#about', classes: 'nav-link', [.text('about')]),
+            a(href: '#experience', classes: 'nav-link', [.text('experience')]),
+            a(href: '#contact', classes: 'nav-link', [.text('contact')]),
           ]),
-
-          // Right: open to work pill + hamburger
           div(classes: 'navbar-right', [
-            a(
-              [.text('Open to work')],
-              href: 'mailto:$email',
-              classes: 'open-to-work-pill',
-            ),
+            if (pi.isAvailable)
+              a(
+                href: 'mailto:${pi.email}',
+                classes: 'open-to-work-pill',
+                [.text('Open to work')],
+              ),
           ]),
         ]),
       ]),
-
-      // Bottom Navigation Bar for Mobile
-      div(
-        [
-          a([.text('work')], href: '#projects', classes: 'bottom-nav-link'),
-          a([.text('about')], href: '#about', classes: 'bottom-nav-link'),
-          a([.text('experience')], href: '#experience', classes: 'bottom-nav-link'),
-          a([.text('contact')], href: '#contact', classes: 'bottom-nav-link'),
-        ],
-        classes: 'bottom-nav',
-      ),
+      // Mobile bottom nav
+      div(classes: 'bottom-nav', [
+        a(href: '#projects', classes: 'bottom-nav-link', [.text('work')]),
+        a(href: '#about', classes: 'bottom-nav-link', [.text('about')]),
+        a(href: '#experience', classes: 'bottom-nav-link', [.text('experience')]),
+        a(href: '#contact', classes: 'bottom-nav-link', [.text('contact')]),
+      ]),
     ]);
   }
 }

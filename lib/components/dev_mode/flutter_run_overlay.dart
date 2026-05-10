@@ -39,7 +39,7 @@ class FlutterRunOverlay extends StatelessComponent {
       (2.9, '#ABB2BF', 'q  Quit (terminate the application).'),
       (3.2, null, '\u00A0'),
       (3.3, '#5C6370', 'An Observatory debugger and profiler on Chrome is available at:'),
-      (3.5, '#61AFEF', 'http://127.0.0.1:9102/yourPortfolioToken=/'),
+      (3.5, '#61AFEF', 'http://127.0.0.1:9102/vatsal_jaganwala=/'),
       (3.7, null, '\u00A0'),
       (3.8, '#ABB2BF', 'Opening DevTools in the browser...'),
     ];

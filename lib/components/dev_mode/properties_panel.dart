@@ -1,5 +1,6 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
+import '../../data/portfolio_data.dart';
 
 /// Renders the properties panel. Inspected node content injected by devmode.js.
 class PropertiesPanel extends StatelessComponent {
@@ -24,16 +25,21 @@ class PropertiesPanel extends StatelessComponent {
   }
 
   List<Component> _buildMetadata() {
-    const meta = [
-      ('app', '"Vatsal Jaganwala"'),
-      ('version', '"2.3.1+42"'),
-      ('dartSDK', '"3.3.0"'),
+    final pi = portfolio.personalInformation;
+    // locale: derive from location — "en_IN" for India, default "en_US"
+    final locale = pi.location.contains('India') ? 'en_IN' : 'en_US';
+
+    final meta = [
+      ('app',        '"${pi.name} Portfolio"'),
+      ('version',    '"2.3.1+42"'),
+      ('dartSDK',    '"3.3.0"'),
       ('flutterVer', '"3.19.0"'),
-      ('buildMode', '"debug"'),
-      ('platform', '"web"'),
-      ('theme', '"dark"'),
-      ('locale', '"en_IN"'),
+      ('buildMode',  '"debug"'),
+      ('platform',   '"web"'),
+      ('theme',      '"dark"'),
+      ('locale',     '"$locale"'),
     ];
+
     return meta.map((e) => div(classes: 'dt-prop-row', [
       span(classes: 'dt-prop-key', [.text(e.$1)]),
       span(classes: 'dt-prop-sep', [.text(':')]),

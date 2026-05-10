@@ -1,12 +1,11 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
-import '../models/portfolio_data.dart';
+import '../data/portfolio_data.dart';
 import '../components/section_wrapper.dart';
 import '../components/education_row.dart';
 
 class EducationSection extends StatelessComponent {
-  final PortfolioData data;
-  const EducationSection({required this.data, super.key});
+  const EducationSection({super.key});
 
   @override
   Component build(BuildContext context) {
@@ -16,7 +15,7 @@ class EducationSection extends StatelessComponent {
         heading: 'Education.',
         children: [
           div(classes: 'education-list', [
-            for (final edu in data.education)
+            for (final edu in portfolio.education)
               EducationRow(education: edu),
           ]),
         ],

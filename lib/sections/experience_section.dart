@@ -1,13 +1,12 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
-import '../models/portfolio_data.dart';
+import '../data/portfolio_data.dart';
 import '../components/section_wrapper.dart';
 import '../components/experience_entry.dart';
 import '../components/cta_button.dart';
 
 class ExperienceSection extends StatelessComponent {
-  final PortfolioData data;
-  const ExperienceSection({required this.data, super.key});
+  const ExperienceSection({super.key});
 
   @override
   Component build(BuildContext context) {
@@ -16,19 +15,17 @@ class ExperienceSection extends StatelessComponent {
         index: '// 05 · EXPERIENCE',
         heading: 'Experience.',
         children: [
-          // Timeline
           div(classes: 'timeline', [
-            for (final exp in data.workExperience)
+            for (final exp in portfolio.workExperience)
               ExperienceEntry(experience: exp),
           ]),
-
-          // Bottom: open to work pill
           div(classes: 'experience-bottom', [
-            CTAButton(
-              label: '● Open to new opportunities',
-              href: 'mailto:${data.personalInformation.email}',
-              variant: ButtonVariant.primary,
-            ),
+            if (portfolio.personalInformation.isAvailable)
+              CTAButton(
+                label: '● Open to new opportunities',
+                href: 'mailto:${portfolio.personalInformation.email}',
+                variant: ButtonVariant.primary,
+              ),
           ]),
         ],
       ),

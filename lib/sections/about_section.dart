@@ -1,39 +1,39 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
-import '../models/portfolio_data.dart';
+import '../data/portfolio_data.dart';
 import '../components/section_wrapper.dart';
 
-
 class AboutSection extends StatelessComponent {
-  final PortfolioData data;
-  const AboutSection({required this.data, super.key});
+  const AboutSection({super.key});
 
   @override
   Component build(BuildContext context) {
-    final pi = data.personalInformation;
-    final currentJob = data.workExperience.isNotEmpty ? data.workExperience.first : null;
+    final pi = portfolio.personalInformation;
+    final currentJob =
+        portfolio.workExperience.isNotEmpty ? portfolio.workExperience.first : null;
 
-    // First sentence of summary for blockquote
-    final sentences = data.summary.split('. ');
-    final pullQuote = sentences.isNotEmpty ? '${sentences.first}.' : data.summary;
-    final remainingSummary = sentences.length > 1 ? sentences.skip(1).join('. ').trim() : '';
+    final sentences = portfolio.summary.split('. ');
+    final pullQuote = sentences.isNotEmpty ? '${sentences.first}.' : portfolio.summary;
+    final remainingSummary =
+        sentences.length > 1 ? sentences.skip(1).join('. ').trim() : '';
 
     final codeLines = [
       '// about_${pi.firstName}.dart',
       '',
       'final ${pi.firstName} = Developer(',
       "  name: '${pi.name}',",
-      '  yearsXP: ${data.yearsExperience > 0 ? data.yearsExperience : 1},',
+      '  yearsXP: ${portfolio.yearsExperience},',
       "  location: '${pi.location}',",
       "  role: '${pi.title}',",
       '  skills: [',
-      ...data.skills.technicalSkills.take(5).map((s) => "    '$s',"),
+      ...portfolio.skills.technicalSkills.take(5).map((skill) => "    '$skill',"),
       '  ],',
-      '  isAvailable: true,',
+      '  isAvailable: ${pi.isAvailable},',
       ');',
     ];
 
     return div(
+      id: 'about',
       [
         SectionWrapper(
           index: '// 03 · ABOUT',
@@ -54,16 +54,17 @@ class AboutSection extends StatelessComponent {
                   ],
                 ]),
               ]),
-
               // Right column: code card + status
               div([
                 div(classes: 'code-block', [
                   for (final line in codeLines) _buildCodeLine(line),
                 ]),
+                if(pi.isAvailable)
                 div(classes: 'status-card', [
                   div(classes: 'status-dot', []),
                   span(classes: 'status-text', [
-                    .text('Available for new opportunities'),
+                    .text( 'Available for new opportunities'
+                        ),
                   ]),
                 ]),
               ]),
@@ -71,7 +72,6 @@ class AboutSection extends StatelessComponent {
           ],
         ),
       ],
-      id: 'about',
     );
   }
 
@@ -87,8 +87,8 @@ class AboutSection extends StatelessComponent {
     if (line.trimLeft().startsWith('//')) {
       return div(classes: 'code-comment', [.text(line)]);
     }
-    // Highlight keywords and strings
-    final regex = RegExp(r"'[^']*'|\b(final|class|List|bool|get|return|true|false|const)\b");
+    final regex =
+        RegExp(r"'[^']*'|\b(final|class|List|bool|get|return|true|false|const)\b");
     final parts = <Component>[];
     int last = 0;
     for (final m in regex.allMatches(line)) {

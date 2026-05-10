@@ -1,18 +1,15 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
-import '../models/portfolio_data.dart';
+import '../data/portfolio_data.dart';
 import '../components/section_wrapper.dart';
 import '../components/achievement_card.dart';
 
 class AchievementsSection extends StatelessComponent {
-  final PortfolioData data;
-  const AchievementsSection({required this.data, super.key});
+  const AchievementsSection({super.key});
 
   @override
   Component build(BuildContext context) {
-    if (data.achievements.isEmpty) {
-      return div([]);
-    }
+    if (portfolio.achievements.isEmpty) return div([]);
 
     return div(id: 'achievements', [
       SectionWrapper(
@@ -20,7 +17,7 @@ class AchievementsSection extends StatelessComponent {
         heading: 'Achievements.',
         children: [
           div(classes: 'two-col', [
-            for (final achievement in data.achievements)
+            for (final achievement in portfolio.achievements)
               AchievementCard(achievement: achievement),
           ]),
         ],

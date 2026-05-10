@@ -1,5 +1,6 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
+import '../../data/portfolio_data.dart';
 
 class TreeNodeData {
   final String id;
@@ -21,70 +22,153 @@ class TreeNodeData {
   });
 }
 
-const List<TreeNodeData> kTreeNodes = [
-  // ── Root ──────────────────────────────────────────────────────────────────
-  TreeNodeData(id: 'material-app',    label: 'MaterialApp',             args: 'title: "Vatsal Jaganwala"',     indent: 0, hasChildren: true),
-  TreeNodeData(id: 'scaffold',        label: 'Scaffold',                args: '',                              indent: 1, hasChildren: true,  parentId: 'material-app'),
-  TreeNodeData(id: 'navbar',          label: 'NavBar',                  args: '',                              indent: 2, hasChildren: false, parentId: 'scaffold'),
-  TreeNodeData(id: 'body',            label: 'SingleChildScrollView',   args: '',                              indent: 2, hasChildren: true,  parentId: 'scaffold'),
+/// Builds the widget tree node list from the live portfolio data.
+/// This ensures tree labels, counts, and names always match the actual content.
+List<TreeNodeData> buildTreeNodes() {
+  final p = portfolio;
+  final pi = p.personalInformation;
 
-  // ── Hero ──────────────────────────────────────────────────────────────────
-  TreeNodeData(id: 'hero',            label: 'HeroSection',             args: '',                              indent: 3, hasChildren: true,  parentId: 'body', section: 'hero'),
-  TreeNodeData(id: 'hero-cta-work',   label: 'CTAButton',               args: 'label: "View my work →"',       indent: 4, hasChildren: false, parentId: 'hero'),
-  TreeNodeData(id: 'hero-cta-contact',label: 'CTAButton',               args: 'label: "Contact ↗"',            indent: 4, hasChildren: false, parentId: 'hero'),
-  TreeNodeData(id: 'hero-code-card',  label: 'DeveloperProfileCard',    args: '',                              indent: 4, hasChildren: false, parentId: 'hero'),
+  return [
+    // ── Root ────────────────────────────────────────────────────────────────
+    TreeNodeData(id: 'material-app', label: 'MaterialApp',
+        args: 'title: "${pi.name}"', indent: 0, hasChildren: true),
+    TreeNodeData(id: 'scaffold', label: 'Scaffold',
+        args: '', indent: 1, hasChildren: true, parentId: 'material-app'),
+    TreeNodeData(id: 'navbar', label: 'NavBar',
+        args: '', indent: 2, hasChildren: false, parentId: 'scaffold'),
+    TreeNodeData(id: 'body', label: 'SingleChildScrollView',
+        args: '', indent: 2, hasChildren: true, parentId: 'scaffold'),
 
-  // ── Projects ──────────────────────────────────────────────────────────────
-  TreeNodeData(id: 'projects',        label: 'ProjectsSection',         args: 'itemCount: 5',                  indent: 3, hasChildren: true,  parentId: 'body', section: 'projects'),
-  TreeNodeData(id: 'project-1',       label: 'ProjectCard',             args: 'title: "Business Management System"',   indent: 4, hasChildren: false, parentId: 'projects', section: 'project-1'),
-  TreeNodeData(id: 'project-2',       label: 'ProjectCard',             args: 'title: "Rehabilitation Workflow App"',  indent: 4, hasChildren: false, parentId: 'projects', section: 'project-2'),
-  TreeNodeData(id: 'project-3',       label: 'ProjectCard',             args: 'title: "Parking Management Platform"', indent: 4, hasChildren: false, parentId: 'projects', section: 'project-3'),
-  TreeNodeData(id: 'project-4',       label: 'ProjectCard',             args: 'title: "Community Management App"',    indent: 4, hasChildren: false, parentId: 'projects', section: 'project-4'),
-  TreeNodeData(id: 'project-5',       label: 'ProjectCard',             args: 'title: "2D to 3D Visualization"',      indent: 4, hasChildren: false, parentId: 'projects', section: 'project-5'),
+    // ── Hero ────────────────────────────────────────────────────────────────
+    TreeNodeData(id: 'hero', label: 'HeroSection',
+        args: '', indent: 3, hasChildren: true, parentId: 'body', section: 'hero'),
+    TreeNodeData(id: 'hero-cta-work', label: 'CTAButton',
+        args: 'label: "View my work →"', indent: 4, hasChildren: false, parentId: 'hero'),
+    TreeNodeData(id: 'hero-cta-contact', label: 'CTAButton',
+        args: 'label: "Contact ↗"', indent: 4, hasChildren: false, parentId: 'hero'),
+    TreeNodeData(id: 'hero-code-card', label: 'DeveloperProfileCard',
+        args: '', indent: 4, hasChildren: false, parentId: 'hero'),
 
-  // ── About ─────────────────────────────────────────────────────────────────
-  TreeNodeData(id: 'about',           label: 'AboutSection',            args: '',                              indent: 3, hasChildren: true,  parentId: 'body', section: 'about'),
-  TreeNodeData(id: 'about-blockquote',label: 'Blockquote',              args: '',                              indent: 4, hasChildren: false, parentId: 'about'),
-  TreeNodeData(id: 'about-code',      label: 'DeveloperCodeBlock',      args: '',                              indent: 4, hasChildren: false, parentId: 'about'),
-  TreeNodeData(id: 'about-status',    label: 'StatusCard',              args: 'available: true',               indent: 4, hasChildren: false, parentId: 'about'),
+    // ── Projects ────────────────────────────────────────────────────────────
+    TreeNodeData(id: 'projects', label: 'ProjectsSection',
+        args: 'itemCount: ${p.projects.length}',
+        indent: 3, hasChildren: p.projects.isNotEmpty, parentId: 'body', section: 'projects'),
+    for (int i = 0; i < p.projects.length; i++)
+      TreeNodeData(
+        id: 'project-${i + 1}',
+        label: 'ProjectCard',
+        args: 'title: "${p.projects[i].name}"',
+        indent: 4,
+        hasChildren: false,
+        parentId: 'projects',
+        section: 'project-${i + 1}',
+      ),
 
-  // ── Skills ────────────────────────────────────────────────────────────────
-  TreeNodeData(id: 'skills',          label: 'SkillsSection',           args: '',                              indent: 3, hasChildren: true,  parentId: 'body', section: 'skills'),
-  TreeNodeData(id: 'skills-tech',     label: 'SkillPillRow',            args: 'group: "technical_skills"',     indent: 4, hasChildren: false, parentId: 'skills'),
-  TreeNodeData(id: 'skills-soft',     label: 'SkillPillRow',            args: 'group: "soft_skills"',          indent: 4, hasChildren: false, parentId: 'skills'),
-  TreeNodeData(id: 'skills-lang',     label: 'SkillPillRow',            args: 'group: "languages"',            indent: 4, hasChildren: false, parentId: 'skills'),
+    // ── About ───────────────────────────────────────────────────────────────
+    TreeNodeData(id: 'about', label: 'AboutSection',
+        args: '', indent: 3, hasChildren: true, parentId: 'body', section: 'about'),
+    TreeNodeData(id: 'about-blockquote', label: 'Blockquote',
+        args: '', indent: 4, hasChildren: false, parentId: 'about'),
+    TreeNodeData(id: 'about-code', label: 'DeveloperCodeBlock',
+        args: '', indent: 4, hasChildren: false, parentId: 'about'),
+    TreeNodeData(id: 'about-status', label: 'StatusCard',
+        args: 'available: ${pi.isAvailable}', indent: 4, hasChildren: false, parentId: 'about'),
 
-  // ── Experience ────────────────────────────────────────────────────────────
-  TreeNodeData(id: 'experience',      label: 'ExperienceSection',       args: 'entries: 1',                    indent: 3, hasChildren: true,  parentId: 'body', section: 'experience'),
-  TreeNodeData(id: 'exp-entry-1',     label: 'ExperienceEntry',         args: 'company: "Instance IT Solutions"', indent: 4, hasChildren: false, parentId: 'experience'),
-  TreeNodeData(id: 'exp-cta',         label: 'CTAButton',               args: 'label: "Open to new opportunities"', indent: 4, hasChildren: false, parentId: 'experience'),
+    // ── Skills ──────────────────────────────────────────────────────────────
+    TreeNodeData(id: 'skills', label: 'SkillsSection',
+        args: '', indent: 3, hasChildren: true, parentId: 'body', section: 'skills'),
+    TreeNodeData(id: 'skills-tech', label: 'SkillPillRow',
+        args: 'group: "technical_skills"', indent: 4, hasChildren: false, parentId: 'skills'),
+    TreeNodeData(id: 'skills-soft', label: 'SkillPillRow',
+        args: 'group: "soft_skills"', indent: 4, hasChildren: false, parentId: 'skills'),
+    TreeNodeData(id: 'skills-lang', label: 'SkillPillRow',
+        args: 'group: "languages"', indent: 4, hasChildren: false, parentId: 'skills'),
 
-  // ── Open Source ───────────────────────────────────────────────────────────
-  TreeNodeData(id: 'open-source',     label: 'OpenSourceSection',       args: 'packages: 2',                   indent: 3, hasChildren: true,  parentId: 'body', section: 'open-source'),
-  TreeNodeData(id: 'os-smartpub',     label: 'OpenSourceCard',          args: 'name: "smartpub"',              indent: 4, hasChildren: false, parentId: 'open-source'),
-  TreeNodeData(id: 'os-logger',       label: 'OpenSourceCard',          args: 'name: "flutter_logger_pro"',    indent: 4, hasChildren: false, parentId: 'open-source'),
+    // ── Experience ──────────────────────────────────────────────────────────
+    TreeNodeData(id: 'experience', label: 'ExperienceSection',
+        args: 'entries: ${p.workExperience.length}',
+        indent: 3, hasChildren: p.workExperience.isNotEmpty, parentId: 'body', section: 'experience'),
+    for (int i = 0; i < p.workExperience.length; i++)
+      TreeNodeData(
+        id: 'exp-entry-${i + 1}',
+        label: 'ExperienceEntry',
+        args: 'company: "${p.workExperience[i].company}"',
+        indent: 4,
+        hasChildren: false,
+        parentId: 'experience',
+      ),
+    if (pi.isAvailable)
+      TreeNodeData(id: 'exp-cta', label: 'CTAButton',
+          args: 'label: "Open to new opportunities"',
+          indent: 4, hasChildren: false, parentId: 'experience'),
 
-  // ── Education ─────────────────────────────────────────────────────────────
-  TreeNodeData(id: 'education',       label: 'EducationSection',        args: 'entries: 3',                    indent: 3, hasChildren: true,  parentId: 'body', section: 'education'),
-  TreeNodeData(id: 'edu-1',           label: 'EducationRow',            args: 'degree: "B.E. in IT"',          indent: 4, hasChildren: false, parentId: 'education'),
-  TreeNodeData(id: 'edu-2',           label: 'EducationRow',            args: 'degree: "Higher Secondary"',    indent: 4, hasChildren: false, parentId: 'education'),
-  TreeNodeData(id: 'edu-3',           label: 'EducationRow',            args: 'degree: "Secondary School"',    indent: 4, hasChildren: false, parentId: 'education'),
+    // ── Open Source ─────────────────────────────────────────────────────────
+    TreeNodeData(id: 'open-source', label: 'OpenSourceSection',
+        args: 'packages: ${p.openSourceContributions.length}',
+        indent: 3, hasChildren: p.openSourceContributions.isNotEmpty,
+        parentId: 'body', section: 'open-source'),
+    for (final os in p.openSourceContributions)
+      TreeNodeData(
+        id: 'os-${os.name}',
+        label: 'OpenSourceCard',
+        args: 'name: "${os.name}"',
+        indent: 4,
+        hasChildren: false,
+        parentId: 'open-source',
+      ),
 
-  // ── Achievements ──────────────────────────────────────────────────────────
-  TreeNodeData(id: 'achievements',    label: 'AchievementsSection',     args: 'count: 2',                      indent: 3, hasChildren: true,  parentId: 'body', section: 'achievements'),
-  TreeNodeData(id: 'ach-1',           label: 'AchievementCard',         args: 'title: "Silent Achiever Award"', indent: 4, hasChildren: false, parentId: 'achievements'),
-  TreeNodeData(id: 'ach-2',           label: 'AchievementCard',         args: 'title: "On The Spot Award"',    indent: 4, hasChildren: false, parentId: 'achievements'),
+    // ── Education ───────────────────────────────────────────────────────────
+    TreeNodeData(id: 'education', label: 'EducationSection',
+        args: 'entries: ${p.education.length}',
+        indent: 3, hasChildren: p.education.isNotEmpty, parentId: 'body', section: 'education'),
+    for (int i = 0; i < p.education.length; i++)
+      TreeNodeData(
+        id: 'edu-${i + 1}',
+        label: 'EducationRow',
+        args: 'degree: "${_shortDegree(p.education[i].degree)}"',
+        indent: 4,
+        hasChildren: false,
+        parentId: 'education',
+      ),
 
-  // ── Contact ───────────────────────────────────────────────────────────────
-  TreeNodeData(id: 'contact',         label: 'ContactSection',          args: '',                              indent: 3, hasChildren: true,  parentId: 'body', section: 'contact'),
-  TreeNodeData(id: 'contact-email',   label: 'CTAButton',               args: 'label: "Send an email"',        indent: 4, hasChildren: false, parentId: 'contact'),
-  TreeNodeData(id: 'contact-linkedin',label: 'CTAButton',               args: 'label: "LinkedIn ↗"',           indent: 4, hasChildren: false, parentId: 'contact'),
-  TreeNodeData(id: 'contact-github',  label: 'CTAButton',               args: 'label: "GitHub ↗"',             indent: 4, hasChildren: false, parentId: 'contact'),
-  TreeNodeData(id: 'contact-footer',  label: 'Footer',                  args: '',                              indent: 4, hasChildren: false, parentId: 'contact'),
+    // ── Achievements ────────────────────────────────────────────────────────
+    TreeNodeData(id: 'achievements', label: 'AchievementsSection',
+        args: 'count: ${p.achievements.length}',
+        indent: 3, hasChildren: p.achievements.isNotEmpty,
+        parentId: 'body', section: 'achievements'),
+    for (int i = 0; i < p.achievements.length; i++)
+      TreeNodeData(
+        id: 'ach-${i + 1}',
+        label: 'AchievementCard',
+        args: 'title: "${p.achievements[i].title}"',
+        indent: 4,
+        hasChildren: false,
+        parentId: 'achievements',
+      ),
 
-  // ── FAB ───────────────────────────────────────────────────────────────────
-  TreeNodeData(id: 'fab',             label: 'FloatingActionButton',    args: 'onPressed: HireCallback',       indent: 2, hasChildren: false, parentId: 'scaffold'),
-];
+    // ── Contact ─────────────────────────────────────────────────────────────
+    TreeNodeData(id: 'contact', label: 'ContactSection',
+        args: '', indent: 3, hasChildren: true, parentId: 'body', section: 'contact'),
+    TreeNodeData(id: 'contact-email', label: 'CTAButton',
+        args: 'label: "Send an email"', indent: 4, hasChildren: false, parentId: 'contact'),
+    TreeNodeData(id: 'contact-linkedin', label: 'CTAButton',
+        args: 'label: "LinkedIn ↗"', indent: 4, hasChildren: false, parentId: 'contact'),
+    TreeNodeData(id: 'contact-github', label: 'CTAButton',
+        args: 'label: "GitHub ↗"', indent: 4, hasChildren: false, parentId: 'contact'),
+    TreeNodeData(id: 'contact-footer', label: 'Footer',
+        args: '', indent: 4, hasChildren: false, parentId: 'contact'),
+
+    // ── FAB ─────────────────────────────────────────────────────────────────
+    TreeNodeData(id: 'fab', label: 'FloatingActionButton',
+        args: 'onPressed: HireCallback', indent: 2, hasChildren: false, parentId: 'scaffold'),
+  ];
+}
+
+/// Abbreviates a degree string for the tree args display.
+String _shortDegree(String degree) {
+  if (degree.length <= 30) return degree;
+  return '${degree.substring(0, 28)}…';
+}
 
 /// Renders the widget tree panel. Interactivity handled by devmode.js.
 class WidgetTreePanel extends StatelessComponent {
@@ -92,6 +176,8 @@ class WidgetTreePanel extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
+    final nodes = buildTreeNodes();
+
     return div(classes: 'dt-tree-panel devtools-panel', [
       div(classes: 'dt-panel-header', [
         span(classes: 'dt-panel-title', [.text('Widget tree')]),
@@ -106,18 +192,14 @@ class WidgetTreePanel extends StatelessComponent {
         ),
       ]),
       div(classes: 'dt-tree-body', [
-        ..._buildAllNodes(),
+        for (final node in nodes) _buildNode(node),
       ]),
     ]);
   }
 
-  List<Component> _buildAllNodes() {
-    return kTreeNodes.map(_buildNode).toList();
-  }
-
   Component _buildNode(TreeNodeData node) {
     const basePx = 4;
-    final String arrow = node.hasChildren ? '▼' : '•';
+    final arrow = node.hasChildren ? '▼' : '•';
 
     final attrs = <String, String>{
       'data-node': node.id,
@@ -132,10 +214,7 @@ class WidgetTreePanel extends StatelessComponent {
 
     return div(
       classes: 'tree-node',
-      attributes: {
-        ...attrs,
-        'style': 'padding-left: ${basePx}px',
-      },
+      attributes: {...attrs, 'style': 'padding-left: ${basePx}px'},
       [
         ...guides,
         span(classes: 'tree-node-toggle', [.text(arrow)]),

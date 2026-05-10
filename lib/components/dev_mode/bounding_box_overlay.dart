@@ -8,12 +8,18 @@ class BoundingBoxOverlay extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
+    // These IDs must match the `id` attributes set on each section component.
+    // DevMode cosmetic constant — not portfolio data — but must stay in sync with DOM.
     const sections = [
-      ('hero', 'Hero'),
-      ('projects', 'ProjectsSection'),
-      ('about', 'AboutSection'),
-      ('experience', 'ExperienceTimeline'),
-      ('contact', 'ContactSection'),
+      ('hero',        'HeroSection'),
+      ('projects',    'ProjectsSection'),
+      ('about',       'AboutSection'),
+      ('skills',      'SkillsSection'),
+      ('experience',  'ExperienceSection'),
+      ('open-source', 'OpenSourceSection'),
+      ('education',   'EducationSection'),
+      ('achievements','AchievementsSection'),
+      ('contact',     'ContactSection'),
     ];
 
     return div(classes: 'dt-bbox-overlay', [

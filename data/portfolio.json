@@ -26,11 +26,7 @@
       "Analytical thinking",
       "Agile development"
     ],
-    "languages": [
-      "English",
-      "Hindi",
-      "Gujarati"
-    ]
+    "languages": ["English", "Hindi", "Gujarati"]
   },
   "work_experience": [
     {
@@ -52,90 +48,80 @@
   "projects": [
     {
       "name": "Business Management System for Retail Operations",
-      "platforms": [
-        "Web"
-      ],
+      "platforms": ["Web"],
       "description": "Designed and developed a centralized system to manage inventory, production workflows, and point-of-sale operations for a retail business. The platform replaced manual processes and improved operational efficiency.",
       "impact": [
         "Reduced manual operational effort",
         "Improved inventory and production tracking accuracy",
         "Streamlined transaction handling and billing workflows"
       ],
-      "technologies_used": [
-        "Flutter",
-        "REST APIs"
-      ]
+      "technologies_used": ["Flutter", "REST APIs"]
     },
     {
       "name": "Rehabilitation Workflow Management Application",
-      "platforms": [
-        "Android",
-        "iOS",
-        "Web"
-      ],
+      "platforms": ["Android", "iOS", "Web"],
       "description": "Built a workflow-driven application to manage large-scale relocation and rehabilitation processes with geo-referenced planning and automated documentation.",
       "impact": [
         "Simplified complex multi-stage relocation workflows",
         "Enabled accurate geo-based planning and visualization",
         "Reduced manual documentation effort through automation"
       ],
-      "technologies_used": [
-        "Flutter",
-        "Geo-mapping",
-        "DWG visualization"
-      ]
+      "technologies_used": ["Flutter", "Geo-mapping", "DWG visualization"]
     },
     {
       "name": "Parking Management and Allocation Platform",
-      "platforms": [
-        "Android",
-        "iOS",
-        "Web"
-      ],
+      "platforms": ["Android", "iOS", "Web"],
       "description": "Developed a platform for visualizing parking layouts, extracting parking inventory, and enabling intelligent space allocation using optimized logic.",
       "impact": [
         "Improved parking space utilization efficiency",
         "Reduced manual allocation effort",
         "Enabled real-time visualization of parking layouts"
       ],
-      "technologies_used": [
-        "Flutter",
-        "DWG visualization",
-        "Algorithms"
-      ]
+      "technologies_used": ["Flutter", "DWG visualization", "Algorithms"]
     },
     {
       "name": "Residential Community Management Application",
-      "platforms": [
-        "Android",
-        "iOS"
-      ],
+      "platforms": ["Android", "iOS"],
       "description": "Created a mobile application to manage community communication, events, visitor tracking, and parcel handling through a centralized platform.",
       "impact": [
         "Enhanced communication between residents and management",
         "Centralized multiple operational workflows",
         "Improved overall user engagement within the community"
       ],
-      "technologies_used": [
-        "Flutter",
-        "Firebase"
-      ]
+      "technologies_used": ["Flutter", "Firebase"]
     },
     {
       "name": "2D to 3D Architectural Visualization Platform",
-      "platforms": [
-        "Web"
-      ],
+      "platforms": ["Web"],
       "description": "Built a web platform that converts 2D architectural plans into interactive 3D models with geo-referenced mapping and structural insights.",
       "impact": [
         "Improved design clarity for stakeholders",
         "Enabled interactive visualization of complex layouts",
         "Reduced dependency on manual interpretation of plans"
       ],
+      "technologies_used": ["Flutter", "3D visualization", "Geo-mapping"]
+    },
+    {
+      "name": "Construction Drawing Management Platform",
+      "platforms": ["Web"],
+      "description": "Developed a centralized web-based drawing and document management platform for construction and infrastructure projects, enabling secure access to the latest PDF and AutoDesk (.NWD/.DWG) files through QR-based workflows, version control, and Autodesk Viewer integration.",
+      "impact": [
+        "Eliminated execution gaps by ensuring teams always access the latest approved drawings",
+        "Improved project collaboration with QR-based file access, commenting, and revision tracking",
+        "Reduced manual document management through automated versioning, notifications, and access control",
+        "Enhanced project security with role-based permissions and audit logging",
+        "Enabled real-time coordination between internal teams, contractors, and external stakeholders"
+      ],
       "technologies_used": [
         "Flutter",
-        "3D visualization",
-        "Geo-mapping"
+        "Web Application Development",
+        "Autodesk Viewer API",
+        "QR Code Integration",
+        "PDF Viewer",
+        "Role-Based Access Control",
+        "Version Control System",
+        "Payment Gateway Integration",
+        "Cloud File Management"
       ]
     }
   ],
@@ -189,12 +175,7 @@
         "Dependency grouping and organization",
         "Backup and restore support"
       ],
-      "technologies_used": [
-        "Dart",
-        "Flutter",
-        "CLI",
-        "YAML parsing"
-      ]
+      "technologies_used": ["Dart", "Flutter", "CLI", "YAML parsing"]
     },
     {
       "name": "flutter_logger_pro",
@@ -208,12 +189,7 @@
         "Improved debugging readability",
         "Cross-platform support"
       ],
-      "technologies_used": [
-        "Dart",
-        "Flutter",
-        "Logging systems",
-        "JSON"
-      ]
+      "technologies_used": ["Dart", "Flutter", "Logging systems", "JSON"]
     }
   ]
 }

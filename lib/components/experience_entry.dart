@@ -20,7 +20,7 @@ class ExperienceEntry extends StatelessComponent {
 
       // Company + location
       p(classes: 'timeline-company', [
-        .text('${experience.company} · Full-time · ${experience.location}'),
+        .text('${experience.company} · ${experience.employmentType} · ${experience.location}'),
       ]),
 
       // Responsibilities

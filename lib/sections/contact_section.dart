@@ -1,22 +1,20 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
-import '../models/portfolio_data.dart';
+import '../data/portfolio_data.dart';
 import '../components/section_wrapper.dart';
 import '../components/cta_button.dart';
 
 class ContactSection extends StatelessComponent {
-  final PortfolioData data;
-  const ContactSection({required this.data, super.key});
+  const ContactSection({super.key});
 
   @override
   Component build(BuildContext context) {
-    final pi = data.personalInformation;
+    final pi = portfolio.personalInformation;
 
-    // Last sentence of summary as subtext
-    final sentences = data.summary.split('. ');
+    final sentences = portfolio.summary.split('. ');
     final subtext = sentences.length > 1
         ? '${sentences.last.trim()}${sentences.last.trim().endsWith('.') ? '' : '.'}'
-        : data.summary;
+        : portfolio.summary;
 
     final year = DateTime.now().year;
 
@@ -26,32 +24,12 @@ class ContactSection extends StatelessComponent {
         heading: "Let's Build\nTogether.",
         children: [
           p(classes: 'contact-subtext', [.text(subtext)]),
-
-          // CTA buttons
           div(classes: 'contact-buttons', [
-            CTAButton(
-              label: '✉ Send an email',
-              href: 'mailto:${pi.email}',
-              variant: ButtonVariant.primary,
-            ),
-            CTAButton(
-              label: 'LinkedIn ↗',
-              href: pi.linkedin,
-              variant: ButtonVariant.primary,
-            ),
-            CTAButton(
-              label: 'GitHub ↗',
-              href: pi.github,
-              variant: ButtonVariant.ghost,
-            ),
-            CTAButton(
-              label: pi.phone,
-              href: 'tel:${pi.phone}',
-              variant: ButtonVariant.ghost,
-            ),
+            CTAButton(label: '✉ Send an email', href: 'mailto:${pi.email}', variant: ButtonVariant.primary),
+            CTAButton(label: 'LinkedIn ↗', href: pi.linkedin, variant: ButtonVariant.primary),
+            CTAButton(label: 'GitHub ↗', href: pi.github, variant: ButtonVariant.ghost),
+            CTAButton(label: pi.phone, href: 'tel:${pi.phone}', variant: ButtonVariant.ghost),
           ]),
-
-          // Contact info cards
           div(classes: 'contact-info-grid', [
             _infoCard('EMAIL', pi.email),
             _infoCard('LOCATION', pi.location),
@@ -60,8 +38,6 @@ class ContactSection extends StatelessComponent {
           ]),
         ],
       ),
-
-      // Footer
       footer(classes: 'footer', [
         div(classes: 'footer-inner', [
           span(classes: 'footer-text', [
@@ -69,9 +45,7 @@ class ContactSection extends StatelessComponent {
             span([.text('<Jaspr />')]),
             .text(' · Designed from scratch'),
           ]),
-          span(classes: 'footer-text', [
-            .text('${pi.firstName}.dev · $year'),
-          ]),
+          span(classes: 'footer-text', [.text('${pi.firstName}.dev · $year')]),
         ]),
       ]),
     ]);
@@ -84,9 +58,6 @@ class ContactSection extends StatelessComponent {
     ]);
   }
 
-  static String _trimUrl(String url) {
-    return url
-        .replaceFirst('https://', '')
-        .replaceFirst('http://', '');
-  }
+  static String _trimUrl(String url) =>
+      url.replaceFirst('https://', '').replaceFirst('http://', '');
 }

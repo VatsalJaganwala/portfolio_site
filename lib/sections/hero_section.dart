@@ -1,71 +1,50 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
-import '../models/portfolio_data.dart';
+import '../data/portfolio_data.dart';
 import '../components/cta_button.dart';
 
 class HeroSection extends StatelessComponent {
-  final PortfolioData data;
-  const HeroSection({required this.data, super.key});
+  const HeroSection({super.key});
 
   @override
   Component build(BuildContext context) {
-    final pi = data.personalInformation;
+    final pi = portfolio.personalInformation;
     final nameParts = pi.name.split(' ');
     final firstName =
         nameParts.isNotEmpty ? nameParts.first.toLowerCase() : pi.name.toLowerCase();
-    final lastName = nameParts.length > 1
-        ? nameParts.sublist(1).join(' ').toLowerCase()
-        : '';
+    final lastName =
+        nameParts.length > 1 ? nameParts.sublist(1).join(' ').toLowerCase() : '';
 
-    final projectCount = data.projects.length;
-    final osCount = data.openSourceContributions.length;
-    final yearsXP = data.yearsExperience;
+    final projectCount = portfolio.projects.length;
+    final osCount = portfolio.openSourceContributions.length;
+    final yearsXP = portfolio.yearsExperience;
 
-    // Short sub-headline: first sentence
-    final sentences = data.summary.split('. ');
-    final subHeadline = sentences.isNotEmpty ? '${sentences.first}.' : data.summary;
-
+    final sentences = portfolio.summary.split('. ');
+    final subHeadline = sentences.isNotEmpty ? '${sentences.first}.' : portfolio.summary;
 
     return div(
+      id: 'hero',
+      classes: 'section-animate',
       [
         div(classes: 'hero', [
           div(classes: 'hero-inner', [
             // Left: content
             div(classes: 'hero-content', [
               div(classes: 'hero-index', [.text('// 01 · HERO')]),
-
-              // Massive headline
               h1(classes: 'hero-headline', [
                 span(classes: 'hero-name-first', [.text(firstName)]),
                 span(classes: 'hero-name-last', [.text('$lastName.')]),
               ]),
-
-              // Sub-headline
-              p(classes: 'hero-subtext', [
-                .text(subHeadline),
-              ]),
-
-              // Stats row
+              p(classes: 'hero-subtext', [.text(subHeadline)]),
               div(classes: 'hero-stats', [
-                _stat('${yearsXP > 0 ? yearsXP : 1}+', 'YEARS EXPERIENCE'),
-                _stat('${projectCount > 0 ? projectCount : 5}+', 'PROJECTS DELIVERED'),
-                _stat('${osCount > 0 ? osCount : 2}+', 'OPEN SOURCE PKGS'),
+                _stat('$yearsXP+', 'YEARS EXPERIENCE'),
+                _stat('$projectCount+', 'PROJECTS DELIVERED'),
+                _stat('$osCount+', 'OPEN SOURCE PKGS'),
               ]),
-
-              // CTA buttons
               div(classes: 'hero-buttons', [
-                CTAButton(
-                  label: 'View my work →',
-                  href: '#projects',
-                  variant: ButtonVariant.primary,
-                ),
-                CTAButton(
-                  label: 'Contact ↗',
-                  href: '#contact',
-                  variant: ButtonVariant.ghost,
-                ),
+                CTAButton(label: 'View my work →', href: '#projects', variant: ButtonVariant.primary),
+                CTAButton(label: 'Contact ↗', href: '#contact', variant: ButtonVariant.ghost),
               ]),
-
               div(classes: 'hero-scroll mt-48', [.text('↓  SCROLL')]),
             ]),
 
@@ -104,13 +83,11 @@ class HeroSection extends StatelessComponent {
                 span(classes: 'code-keyword', [.text('List')]),
                 span(classes: 'code-normal', [.text('<String> skills = [')]),
               ]),
-              for (int i = 0;
-                  i < data.skills.technicalSkills.length && i < 5;
-                  i++)
+              for (int i = 0; i < portfolio.skills.technicalSkills.length && i < 5; i++)
                 _cl([
                   span(classes: 'code-normal', [.text('    ')]),
                   span(classes: 'code-string', [
-                    .text("'${data.skills.technicalSkills[i]}',"),
+                    .text("'${portfolio.skills.technicalSkills[i]}',"),
                   ]),
                 ]),
               _cl([span(classes: 'code-normal', [.text('  ];')])]),
@@ -119,7 +96,7 @@ class HeroSection extends StatelessComponent {
                 span(classes: 'code-normal', [.text('  ')]),
                 span(classes: 'code-keyword', [.text('bool ')]),
                 span(classes: 'code-normal', [.text('get isAvailable => ')]),
-                span(classes: 'code-keyword', [.text('true')]),
+                span(classes: 'code-keyword', [.text('${pi.isAvailable}')]),
                 span(classes: 'code-normal', [.text(';')]),
               ]),
               _cl([span(classes: 'code-normal', [.text('}')])]),
@@ -127,8 +104,6 @@ class HeroSection extends StatelessComponent {
           ]),
         ]),
       ],
-      id: 'hero',
-      classes: 'section-animate',
     );
   }
 

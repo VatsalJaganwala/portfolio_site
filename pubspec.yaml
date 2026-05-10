@@ -6,7 +6,6 @@ environment:
   sdk: ^3.10.0
 
 dependencies:
-  http: ^1.6.0
   jaspr: ^0.22.4
   universal_web: ^1.1.1
 

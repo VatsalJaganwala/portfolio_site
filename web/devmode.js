@@ -7,9 +7,30 @@
  *  - Hot reload simulation (r key — flash + console logs)
  *  - Keyboard shortcuts panel (? key)
  *  - Time-based console greeting
+ *
+ * Data contract: window.__portfolio is injected by main.server.dart as an
+ * inline <script> before this file loads. All personal/project data is read
+ * from that object. If it is missing (e.g. stale build), DOM-based fallbacks
+ * are used where possible.
  */
 (function () {
   'use strict';
+
+  // ─── Bootstrap: read portfolio data from <meta name="devmode-data"> ──────
+  // main.server.dart embeds a JSON string in this meta tag at build time.
+  // This is the only reliable way to pass Dart data to JS in Jaspr static mode
+  // (script(content:) does not render inline JS in the static renderer).
+  (function () {
+    try {
+      const el = document.querySelector('meta[name="devmode-data"]');
+      if (el && el.content) {
+        window.__portfolio = JSON.parse(el.content);
+      }
+    } catch (e) {
+      console.warn('[devmode] Failed to parse devmode-data meta tag:', e);
+      window.__portfolio = {};
+    }
+  })();
 
   // ─── State ───────────────────────────────────────────────────────────────
   let isDevMode = false;
@@ -269,6 +290,8 @@
       searchQuery = '';
       hotReloadCount = 0;
       shortcutsVisible = false;
+      // Reset nodeProps cache so it rebuilds from window.__portfolio on re-entry
+      _nodeProps = null;
     }, 350);
   }
 
@@ -364,8 +387,11 @@
 
   // ─── Initial console logs ─────────────────────────────────────────────────
   function scheduleInitialLogs() {
+    const p = window.__portfolio || {};
+    // Widget count: rough estimate based on actual content size
+    const widgetCount = 800 + (p.projectCount || 0) * 8 + (p.experienceCount || 0) * 6;
     const logs = [
-      [0,    'info',    'Portfolio initialised. Rendering 847 widgets...'],
+      [0,    'info',    `Portfolio initialised. Rendering ${widgetCount} widgets...`],
       [300,  'info',    'Theme: dark. Platform: web.'],
       [600,  'debug',   'Hot restart not available in production build.'],
       [900,  'info',    'DevTools connected. Inspector active.'],
@@ -525,64 +551,122 @@
   }
 
   // --- Properties panel ---------------------------------------------------
-  const nodeProps = {
-    // Root
-    'material-app':    [{ key: 'title', value: '"Vatsal Jaganwala"', type: '' }, { key: 'debugShowCheckedModeBanner', value: 'false', type: 'type-bool' }, { key: 'themeMode', value: 'ThemeMode.dark', type: 'type-enum' }, { key: 'locale', value: 'Locale("en", "IN")', type: 'type-ref' }],
-    'scaffold':        [{ key: 'backgroundColor', value: 'Color(0xFF0D0D0D)', type: 'type-ref' }, { key: 'resizeToAvoidBottomInset', value: 'true', type: 'type-bool' }],
-    'navbar':          [{ key: 'name', value: '"vatsal"', type: '' }, { key: 'email', value: '"vatsaljaganwala@gmail.com"', type: '' }, { key: 'position', value: 'fixed', type: 'type-enum' }, { key: 'height', value: '60.0', type: 'type-num' }],
-    'body':            [{ key: 'scrollDirection', value: 'Axis.vertical', type: 'type-enum' }, { key: 'physics', value: 'BouncingScrollPhysics()', type: 'type-ref' }, { key: 'child', value: 'Column', type: 'type-ref' }],
+  // nodeProps is built from window.__portfolio (injected by main.server.dart).
+  // No personal data is hardcoded here.
+  function buildNodeProps() {
+    const p = window.__portfolio || {};
+    const props = {};
+
+    // Root / structural nodes
+    props['material-app']    = [{ key: 'title', value: `"${p.name || ''}"`, type: '' }, { key: 'debugShowCheckedModeBanner', value: 'false', type: 'type-bool' }, { key: 'themeMode', value: 'ThemeMode.dark', type: 'type-enum' }, { key: 'locale', value: 'Locale("en", "IN")', type: 'type-ref' }];
+    props['scaffold']        = [{ key: 'backgroundColor', value: 'Color(0xFF0D0D0D)', type: 'type-ref' }, { key: 'resizeToAvoidBottomInset', value: 'true', type: 'type-bool' }];
+    props['navbar']          = [{ key: 'name', value: `"${(p.name || '').split(' ')[0].toLowerCase()}"`, type: '' }, { key: 'email', value: `"${p.email || ''}"`, type: '' }, { key: 'position', value: 'fixed', type: 'type-enum' }, { key: 'height', value: '60.0', type: 'type-num' }];
+    props['body']            = [{ key: 'scrollDirection', value: 'Axis.vertical', type: 'type-enum' }, { key: 'physics', value: 'BouncingScrollPhysics()', type: 'type-ref' }, { key: 'child', value: 'Column', type: 'type-ref' }];
+
     // Hero
-    'hero':            [{ key: 'name', value: '"Vatsal Jaganwala"', type: '' }, { key: 'title', value: '"Flutter Developer"', type: '' }, { key: 'location', value: '"Surat, India"', type: '' }, { key: 'yearsXP', value: '2', type: 'type-num' }, { key: 'projectCount', value: '5', type: 'type-num' }, { key: 'osPackages', value: '2', type: 'type-num' }, { key: 'isHovered', value: 'false', type: 'type-live' }],
-    'hero-cta-work':   [{ key: 'label', value: '"View my work \u2192"', type: '' }, { key: 'href', value: '"#projects"', type: '' }, { key: 'variant', value: 'ButtonVariant.primary', type: 'type-enum' }],
-    'hero-cta-contact':[{ key: 'label', value: '"Contact \u2197"', type: '' }, { key: 'href', value: '"#contact"', type: '' }, { key: 'variant', value: 'ButtonVariant.ghost', type: 'type-enum' }],
-    'hero-code-card':  [{ key: 'name', value: '"Vatsal Jaganwala"', type: '' }, { key: 'role', value: '"Flutter Developer"', type: '' }, { key: 'location', value: '"Surat, India"', type: '' }, { key: 'isAvailable', value: 'true', type: 'type-bool' }],
+    props['hero']            = [{ key: 'name', value: `"${p.name || ''}"`, type: '' }, { key: 'title', value: `"${p.title || ''}"`, type: '' }, { key: 'location', value: `"${p.location || ''}"`, type: '' }, { key: 'projectCount', value: String(p.projectCount || 0), type: 'type-num' }, { key: 'osPackages', value: String(p.osCount || 0), type: 'type-num' }, { key: 'isHovered', value: 'false', type: 'type-live' }];
+    props['hero-cta-work']   = [{ key: 'label', value: '"View my work →"', type: '' }, { key: 'href', value: '"#projects"', type: '' }, { key: 'variant', value: 'ButtonVariant.primary', type: 'type-enum' }];
+    props['hero-cta-contact']= [{ key: 'label', value: '"Contact ↗"', type: '' }, { key: 'href', value: '"#contact"', type: '' }, { key: 'variant', value: 'ButtonVariant.ghost', type: 'type-enum' }];
+    props['hero-code-card']  = [{ key: 'name', value: `"${p.name || ''}"`, type: '' }, { key: 'role', value: `"${p.title || ''}"`, type: '' }, { key: 'location', value: `"${p.location || ''}"`, type: '' }, { key: 'isAvailable', value: 'true', type: 'type-bool' }];
+
     // Projects
-    'projects':        [{ key: 'itemCount', value: '5', type: 'type-num' }, { key: 'scrollDir', value: 'Axis.vertical', type: 'type-enum' }, { key: 'padding', value: 'EdgeInsets.all(24.0)', type: 'type-ref' }, { key: 'isVisible', value: 'true', type: 'type-live' }],
-    'project-1':       [{ key: 'title', value: '"Business Management System for Retail Operations"', type: '' }, { key: 'platforms', value: '"[Web]"', type: '' }, { key: 'tech', value: '"Flutter, REST APIs"', type: '' }, { key: 'isHovered', value: 'false', type: 'type-live' }, { key: 'animProgress', value: '0.0', type: 'type-live' }],
-    'project-2':       [{ key: 'title', value: '"Rehabilitation Workflow Management Application"', type: '' }, { key: 'platforms', value: '"[Android, iOS, Web]"', type: '' }, { key: 'tech', value: '"Flutter, Geo-mapping, DWG"', type: '' }, { key: 'isHovered', value: 'false', type: 'type-live' }, { key: 'animProgress', value: '0.0', type: 'type-live' }],
-    'project-3':       [{ key: 'title', value: '"Parking Management and Allocation Platform"', type: '' }, { key: 'platforms', value: '"[Android, iOS, Web]"', type: '' }, { key: 'tech', value: '"Flutter, DWG, Algorithms"', type: '' }, { key: 'isHovered', value: 'false', type: 'type-live' }, { key: 'animProgress', value: '0.0', type: 'type-live' }],
-    'project-4':       [{ key: 'title', value: '"Residential Community Management Application"', type: '' }, { key: 'platforms', value: '"[Android, iOS]"', type: '' }, { key: 'tech', value: '"Flutter, Firebase"', type: '' }, { key: 'isHovered', value: 'false', type: 'type-live' }, { key: 'animProgress', value: '0.0', type: 'type-live' }],
-    'project-5':       [{ key: 'title', value: '"2D to 3D Architectural Visualization Platform"', type: '' }, { key: 'platforms', value: '"[Web]"', type: '' }, { key: 'tech', value: '"Flutter, 3D visualization, Geo-mapping"', type: '' }, { key: 'isHovered', value: 'false', type: 'type-live' }, { key: 'animProgress', value: '0.0', type: 'type-live' }],
+    props['projects'] = [{ key: 'itemCount', value: String(p.projectCount || 0), type: 'type-num' }, { key: 'scrollDir', value: 'Axis.vertical', type: 'type-enum' }, { key: 'padding', value: 'EdgeInsets.all(24.0)', type: 'type-ref' }, { key: 'isVisible', value: 'true', type: 'type-live' }];
+    const projData = p.projects || {};
+    Object.entries(projData).forEach(([id, proj]) => {
+      props[id] = [
+        { key: 'title',       value: `"${proj.title || ''}"`,     type: '' },
+        { key: 'platforms',   value: `"${proj.platforms || ''}"`, type: '' },
+        { key: 'tech',        value: `"${proj.tech || ''}"`,      type: '' },
+        { key: 'isHovered',   value: 'false',                     type: 'type-live' },
+        { key: 'animProgress',value: '0.0',                       type: 'type-live' },
+      ];
+    });
+
     // About
-    'about':           [{ key: 'name', value: '"Vatsal Jaganwala"', type: '' }, { key: 'role', value: '"Associate Flutter Developer"', type: '' }, { key: 'company', value: '"Instance IT Solutions"', type: '' }, { key: 'location', value: '"Surat, India"', type: '' }, { key: 'since', value: '"08/2023"', type: '' }, { key: 'isAnimated', value: 'true', type: 'type-bool' }],
-    'about-blockquote':[{ key: 'text', value: '"Associate Flutter Developer at Instance IT Solutions..."', type: '' }, { key: 'borderColor', value: 'Color(0xFF4ADE80)', type: 'type-ref' }],
-    'about-code':      [{ key: 'firstName', value: '"vatsal"', type: '' }, { key: 'yearsXP', value: '2', type: 'type-num' }, { key: 'isAvailable', value: 'true', type: 'type-bool' }],
-    'about-status':    [{ key: 'available', value: 'true', type: 'type-bool' }, { key: 'label', value: '"Available for new opportunities"', type: '' }, { key: 'dotColor', value: 'Color(0xFF4ADE80)', type: 'type-ref' }],
+    const exp0 = Object.values(p.experience || {})[0] || {};
+    props['about']           = [{ key: 'name', value: `"${p.name || ''}"`, type: '' }, { key: 'role', value: `"${exp0.jobTitle || ''}"`, type: '' }, { key: 'company', value: `"${exp0.company || ''}"`, type: '' }, { key: 'location', value: `"${p.location || ''}"`, type: '' }, { key: 'since', value: `"${exp0.startDate || ''}"`, type: '' }, { key: 'isAnimated', value: 'true', type: 'type-bool' }];
+    props['about-blockquote']= [{ key: 'borderColor', value: 'Color(0xFF4ADE80)', type: 'type-ref' }];
+    props['about-code']      = [{ key: 'firstName', value: `"${(p.name || '').split(' ')[0].toLowerCase()}"`, type: '' }, { key: 'isAvailable', value: 'true', type: 'type-bool' }];
+    props['about-status']    = [{ key: 'available', value: 'true', type: 'type-bool' }, { key: 'label', value: '"Available for new opportunities"', type: '' }];
+
     // Skills
-    'skills':          [{ key: 'techCount', value: '8', type: 'type-num' }, { key: 'softCount', value: '4', type: 'type-num' }, { key: 'langCount', value: '3', type: 'type-num' }],
-    'skills-tech':     [{ key: 'group', value: '"technical_skills"', type: '' }, { key: 'count', value: '8', type: 'type-num' }, { key: 'items', value: '"Flutter, Dart, GetX, Firebase, REST APIs, Cross-platform, OOP, Git"', type: '' }],
-    'skills-soft':     [{ key: 'group', value: '"soft_skills"', type: '' }, { key: 'count', value: '4', type: 'type-num' }, { key: 'items', value: '"Problem-solving, Team collaboration, Analytical thinking, Agile"', type: '' }],
-    'skills-lang':     [{ key: 'group', value: '"languages"', type: '' }, { key: 'count', value: '3', type: 'type-num' }, { key: 'items', value: '"English, Hindi, Gujarati"', type: '' }],
+    props['skills']      = [{ key: 'techCount', value: '8', type: 'type-num' }, { key: 'softCount', value: '4', type: 'type-num' }, { key: 'langCount', value: '3', type: 'type-num' }];
+    props['skills-tech'] = [{ key: 'group', value: '"technical_skills"', type: '' }];
+    props['skills-soft'] = [{ key: 'group', value: '"soft_skills"', type: '' }];
+    props['skills-lang'] = [{ key: 'group', value: '"languages"', type: '' }];
+
     // Experience
-    'experience':      [{ key: 'entryCount', value: '1', type: 'type-num' }, { key: 'layout', value: '"vertical timeline"', type: '' }],
-    'exp-entry-1':     [{ key: 'jobTitle', value: '"Associate Flutter Developer"', type: '' }, { key: 'company', value: '"Instance IT Solutions"', type: '' }, { key: 'location', value: '"Surat, India"', type: '' }, { key: 'startDate', value: '"08/2023"', type: '' }, { key: 'endDate', value: '"Present"', type: '' }, { key: 'responsibilities', value: '6', type: 'type-num' }],
-    'exp-cta':         [{ key: 'label', value: '"Open to new opportunities"', type: '' }, { key: 'href', value: '"mailto:vatsaljaganwala@gmail.com"', type: '' }, { key: 'variant', value: 'ButtonVariant.primary', type: 'type-enum' }],
+    props['experience'] = [{ key: 'entryCount', value: String(p.experienceCount || 0), type: 'type-num' }, { key: 'layout', value: '"vertical timeline"', type: '' }];
+    Object.entries(p.experience || {}).forEach(([id, exp]) => {
+      props[id] = [
+        { key: 'jobTitle',         value: `"${exp.jobTitle || ''}"`,         type: '' },
+        { key: 'company',          value: `"${exp.company || ''}"`,          type: '' },
+        { key: 'location',         value: `"${exp.location || ''}"`,         type: '' },
+        { key: 'startDate',        value: `"${exp.startDate || ''}"`,        type: '' },
+        { key: 'endDate',          value: `"${exp.endDate || ''}"`,          type: '' },
+        { key: 'responsibilities', value: String(exp.responsibilities || 0), type: 'type-num' },
+      ];
+    });
+    props['exp-cta'] = [{ key: 'label', value: '"Open to new opportunities"', type: '' }, { key: 'href', value: `"mailto:${p.email || ''}"`, type: '' }, { key: 'variant', value: 'ButtonVariant.primary', type: 'type-enum' }];
+
     // Open Source
-    'open-source':     [{ key: 'packages', value: '2', type: 'type-num' }, { key: 'layout', value: '"two-column grid"', type: '' }],
-    'os-smartpub':     [{ key: 'name', value: '"smartpub"', type: '' }, { key: 'role', value: '"Creator / Maintainer"', type: '' }, { key: 'tech', value: '"Dart, Flutter, CLI, YAML parsing"', type: '' }, { key: 'features', value: '5', type: 'type-num' }],
-    'os-logger':       [{ key: 'name', value: '"flutter_logger_pro"', type: '' }, { key: 'role', value: '"Creator / Maintainer"', type: '' }, { key: 'tech', value: '"Dart, Flutter, Logging systems, JSON"', type: '' }, { key: 'features', value: '5', type: 'type-num' }],
+    props['open-source'] = [{ key: 'packages', value: String(p.osCount || 0), type: 'type-num' }, { key: 'layout', value: '"two-column grid"', type: '' }];
+    Object.entries(p.openSource || {}).forEach(([id, os]) => {
+      props[id] = [
+        { key: 'name',     value: `"${os.name || ''}"`, type: '' },
+        { key: 'role',     value: `"${os.role || ''}"`, type: '' },
+        { key: 'tech',     value: `"${os.tech || ''}"`, type: '' },
+        { key: 'features', value: String(os.features || 0), type: 'type-num' },
+      ];
+    });
+
     // Education
-    'education':       [{ key: 'entryCount', value: '3', type: 'type-num' }, { key: 'layout', value: '"list"', type: '' }],
-    'edu-1':           [{ key: 'degree', value: '"B.E. in Information Technology"', type: '' }, { key: 'institution', value: '"SVIT, Vasad, Anand"', type: '' }, { key: 'duration', value: '"08/2020 - 08/2024"', type: '' }, { key: 'cgpa', value: '"8.23"', type: '' }],
-    'edu-2':           [{ key: 'degree', value: '"Higher Secondary Education (PCM)"', type: '' }, { key: 'institution', value: '"Riverdale Academy, Surat"', type: '' }, { key: 'endDate', value: '"03/2020"', type: '' }],
-    'edu-3':           [{ key: 'degree', value: '"Secondary School Education"', type: '' }, { key: 'institution', value: '"S. D. R. Umrigar School, Surat"', type: '' }, { key: 'endDate', value: '"03/2018"', type: '' }],
+    props['education'] = [{ key: 'entryCount', value: String(p.educationCount || 0), type: 'type-num' }, { key: 'layout', value: '"list"', type: '' }];
+    Object.entries(p.education || {}).forEach(([id, edu]) => {
+      const row = [
+        { key: 'degree',      value: `"${edu.degree || ''}"`,      type: '' },
+        { key: 'institution', value: `"${edu.institution || ''}"`, type: '' },
+        { key: 'duration',    value: `"${edu.duration || ''}"`,    type: '' },
+      ];
+      if (edu.cgpa) row.push({ key: 'cgpa', value: `"${edu.cgpa}"`, type: '' });
+      props[id] = row;
+    });
+
     // Achievements
-    'achievements':    [{ key: 'count', value: '2', type: 'type-num' }, { key: 'layout', value: '"two-column grid"', type: '' }],
-    'ach-1':           [{ key: 'title', value: '"Silent Achiever Award"', type: '' }, { key: 'organization', value: '"Instance IT Solutions"', type: '' }, { key: 'date', value: '"01/04/2025"', type: '' }],
-    'ach-2':           [{ key: 'title', value: '"On The Spot Award"', type: '' }, { key: 'organization', value: '"Instance IT Solutions"', type: '' }, { key: 'date', value: '"01/05/2024"', type: '' }],
+    props['achievements'] = [{ key: 'count', value: String(p.achievementCount || 0), type: 'type-num' }, { key: 'layout', value: '"two-column grid"', type: '' }];
+    Object.entries(p.achievements || {}).forEach(([id, ach]) => {
+      props[id] = [
+        { key: 'title',        value: `"${ach.title || ''}"`,        type: '' },
+        { key: 'organization', value: `"${ach.organization || ''}"`, type: '' },
+        { key: 'date',         value: `"${ach.date || ''}"`,         type: '' },
+      ];
+    });
+
     // Contact
-    'contact':         [{ key: 'email', value: '"vatsaljaganwala@gmail.com"', type: '' }, { key: 'phone', value: '"+917041355506"', type: '' }, { key: 'linkedin', value: '"linkedin.com/vatsaljaganwala"', type: '' }, { key: 'github', value: '"github.com/vatsaljaganwala"', type: '' }, { key: 'hiringSignal', value: 'true', type: 'type-live' }],
-    'contact-email':   [{ key: 'label', value: '"Send an email"', type: '' }, { key: 'href', value: '"mailto:vatsaljaganwala@gmail.com"', type: '' }, { key: 'variant', value: 'ButtonVariant.primary', type: 'type-enum' }],
-    'contact-linkedin':[{ key: 'label', value: '"LinkedIn"', type: '' }, { key: 'href', value: '"https://linkedin.com/vatsaljaganwala"', type: '' }, { key: 'variant', value: 'ButtonVariant.primary', type: 'type-enum' }],
-    'contact-github':  [{ key: 'label', value: '"GitHub"', type: '' }, { key: 'href', value: '"https://github.com/vatsaljaganwala"', type: '' }, { key: 'variant', value: 'ButtonVariant.ghost', type: 'type-enum' }],
-    'contact-footer':  [{ key: 'builtWith', value: '"Jaspr"', type: '' }, { key: 'year', value: '2025', type: 'type-num' }],
+    props['contact']          = [{ key: 'email', value: `"${p.email || ''}"`, type: '' }, { key: 'phone', value: `"${p.phone || ''}"`, type: '' }, { key: 'linkedin', value: `"${p.linkedin || ''}"`, type: '' }, { key: 'github', value: `"${p.github || ''}"`, type: '' }, { key: 'hiringSignal', value: 'true', type: 'type-live' }];
+    props['contact-email']    = [{ key: 'label', value: '"Send an email"', type: '' }, { key: 'href', value: `"mailto:${p.email || ''}"`, type: '' }, { key: 'variant', value: 'ButtonVariant.primary', type: 'type-enum' }];
+    props['contact-linkedin'] = [{ key: 'label', value: '"LinkedIn"', type: '' }, { key: 'href', value: `"${p.linkedin || ''}"`, type: '' }, { key: 'variant', value: 'ButtonVariant.primary', type: 'type-enum' }];
+    props['contact-github']   = [{ key: 'label', value: '"GitHub"', type: '' }, { key: 'href', value: `"${p.github || ''}"`, type: '' }, { key: 'variant', value: 'ButtonVariant.ghost', type: 'type-enum' }];
+    props['contact-footer']   = [{ key: 'builtWith', value: '"Jaspr"', type: '' }, { key: 'year', value: String(new Date().getFullYear()), type: 'type-num' }];
+
     // FAB
-    'fab':             [{ key: 'elevation', value: '6.0', type: 'type-num' }, { key: 'tooltip', value: '"Hire me"', type: '' }, { key: 'onPressed', value: 'HireCallback', type: 'type-ref' }],
-  };
+    props['fab'] = [{ key: 'elevation', value: '6.0', type: 'type-num' }, { key: 'tooltip', value: '"Hire me"', type: '' }, { key: 'onPressed', value: 'HireCallback', type: 'type-ref' }];
+
+    return props;
+  }
+
+  // Built once on first use, then cached
+  let _nodeProps = null;
+  function getNodeProps() {
+    if (!_nodeProps) _nodeProps = buildNodeProps();
+    return _nodeProps;
+  }
+
   function renderProperties() {
     const container = document.getElementById('dt-props-inspected');
     if (!container) return;
 
+    const nodeProps = getNodeProps();
     const props = inspectedNodeId ? nodeProps[inspectedNodeId] : null;
     if (!props) {
       container.innerHTML = `<p class="dt-props-hint">// Hover any widget to inspect</p>`;
@@ -824,11 +908,19 @@
 
   // ─── Phase 2: Git Commit Badges ──────────────────────────────────────────
 
-  const commitBadges = [
-    { hash: 'a4f2c1d', message: 'feat: first flutter production app' },
-    { hash: '3b9e821', message: 'fix: shipped 5 client apps on time' },
-    { hash: 'f71c304', message: 'feat: joined as flutter developer' },
-  ];
+  // Commit badges are decorative fake git history for the DevMode illusion.
+  // Messages reference real experience data via window.__portfolio.
+  function buildCommitBadges() {
+    const p = window.__portfolio || {};
+    const exp = Object.values(p.experience || {})[0] || {};
+    const company = exp.company || 'the company';
+    const projectCount = p.projectCount || 0;
+    return [
+      { hash: 'a4f2c1d', message: `feat: first flutter production app` },
+      { hash: '3b9e821', message: `fix: shipped ${projectCount} client apps on time` },
+      { hash: 'f71c304', message: `feat: joined as flutter developer at ${company}` },
+    ];
+  }
 
   function injectCommitBadges() {
     if (badgesInjected) return;
@@ -837,11 +929,12 @@
     const timeline = scopedQuery('#experience .timeline');
     if (!timeline) return;
 
+    const badges = buildCommitBadges();
     const entries = timeline.querySelectorAll('.timeline-item, .experience-entry, .timeline-entry, [class*="experience"]');
     entries.forEach((entry, i) => {
-      if (i >= commitBadges.length) return;
+      if (i >= badges.length) return;
       if (entry.querySelector('.dt-commit-badge')) return;
-      const { hash, message } = commitBadges[i];
+      const { hash, message } = badges[i];
       const badge = document.createElement('span');
       badge.className = 'dt-commit-badge';
       badge.innerHTML = `<span class="dt-commit-hash">commit ${hash}</span>  — ${message}`;
@@ -856,22 +949,45 @@
 
   // ─── Phase 2: Section Hover Listeners (reactive console logs) ────────────
 
-  const sectionLogMap = {
-    'hero':         () => addLog('debug', 'Hero widget entered hovered state. Rebuilding.'),
-    'projects':     () => addLog('info',  'ProjectsSection entered viewport. ListView rendering 5 items.'),
-    'about':        () => addLog('info',  'about_me.dart loaded. Static analysis: 0 errors, 0 warnings.'),
-    'skills':       () => addLog('debug', 'SkillsSection mounted. Rendering pill groups.'),
-    'experience':   () => addLog('info',  'ExperienceTimeline mounted. Entries: 1. Git log attached.'),
-    'open-source':  () => addLog('info',  'OpenSourceSection mounted. Packages: 2.'),
-    'education':    () => addLog('debug', 'EducationSection mounted. Entries: 3.'),
-    'achievements': () => addLog('debug', 'AchievementsSection mounted. Count: 2.'),
-    'contact':      () => addLog('info',  'ContactSection entered viewport.'),
-  };
+  // sectionLogMap: counts are read lazily from window.__portfolio at fire time.
+  function buildSectionLogMap() {
+    return {
+      'hero':         () => addLog('debug', 'Hero widget entered hovered state. Rebuilding.'),
+      'projects':     () => {
+        // Read count lazily — window.__portfolio is guaranteed set by now
+        const count = (window.__portfolio || {}).projectCount
+          // Fallback: count actual project card elements in the scoped DOM
+          || scopedQueryAll('[id^="project-"]').length
+          || 0;
+        addLog('info', `ProjectsSection entered viewport. ListView rendering ${count} items.`);
+      },
+      'about':        () => addLog('info',  'about_me.dart loaded. Static analysis: 0 errors, 0 warnings.'),
+      'skills':       () => addLog('debug', 'SkillsSection mounted. Rendering pill groups.'),
+      'experience':   () => {
+        const count = (window.__portfolio || {}).experienceCount || 0;
+        addLog('info', `ExperienceTimeline mounted. Entries: ${count}. Git log attached.`);
+      },
+      'open-source':  () => {
+        const count = (window.__portfolio || {}).osCount || 0;
+        addLog('info', `OpenSourceSection mounted. Packages: ${count}.`);
+      },
+      'education':    () => {
+        const count = (window.__portfolio || {}).educationCount || 0;
+        addLog('debug', `EducationSection mounted. Entries: ${count}.`);
+      },
+      'achievements': () => {
+        const count = (window.__portfolio || {}).achievementCount || 0;
+        addLog('debug', `AchievementsSection mounted. Count: ${count}.`);
+      },
+      'contact':      () => addLog('info',  'ContactSection entered viewport.'),
+    };
+  }
 
   // Track which sections have already fired to avoid spam
   const sectionLogFired = {};
 
   function setupSectionListeners() {
+    const sectionLogMap = buildSectionLogMap();
     Object.keys(sectionLogMap).forEach(sectionId => {
       const el = scopedById(sectionId);
       if (!el) return;
@@ -920,19 +1036,25 @@
 
   // ─── Phase 2: Project Card Hover (live properties) ───────────────────────
 
-  // Map project-N id → nodeProps key
-  const projectCardNodeMap = {
-    'project-1': 'project-1',
-    'project-2': 'project-2',
-    'project-3': 'project-3',
-    'project-4': 'project-4',
-    'project-5': 'project-5',
-  };
+  // Build project card map from the actual DOM — counts real rendered cards,
+  // not window.__portfolio which may not be set in all environments.
+  function buildProjectCardNodeMap() {
+    const map = {};
+    // Prefer window.__portfolio count; fall back to counting scoped DOM elements
+    const count = (window.__portfolio || {}).projectCount
+      || scopedQueryAll('[id^="project-"]').length
+      || 0;
+    for (let i = 1; i <= count; i++) {
+      map[`project-${i}`] = `project-${i}`;
+    }
+    return map;
+  }
 
   let animProgressTimer = null;
   let animProgressValue = 0;
 
   function setupProjectCardListeners() {
+    const projectCardNodeMap = buildProjectCardNodeMap();
     Object.entries(projectCardNodeMap).forEach(([cardId, nodeId]) => {
       const el = scopedById(cardId);
       if (!el) return;
@@ -941,19 +1063,22 @@
         if (!isDevMode) return;
         inspectedNodeId = nodeId;
         // Update isHovered in nodeProps
-        const props = nodeProps[nodeId];
+        const props = getNodeProps()[nodeId];
         if (props) {
           const hovProp = props.find(p => p.key === 'isHovered');
           if (hovProp) hovProp.value = 'true';
         }
         renderProperties();
         startAnimProgress(nodeId);
-        addLog('info', `Navigator: pushed route '/projects/${cardId}'.`);
+        // Log the real project name, not the DOM id
+        const projData = (window.__portfolio || {}).projects || {};
+        const projTitle = (projData[cardId] || {}).title || cardId;
+        addLog('info', `Navigator: pushed route '/projects/${projTitle}'.`);
       };
 
       const leave = () => {
         if (!isDevMode) return;
-        const props = nodeProps[nodeId];
+        const props = getNodeProps()[nodeId];
         if (props) {
           const hovProp = props.find(p => p.key === 'isHovered');
           if (hovProp) hovProp.value = 'false';
@@ -984,7 +1109,7 @@
     animProgressValue = 0.0;
     animProgressTimer = setInterval(() => {
       animProgressValue = Math.min(0.73, animProgressValue + 0.073);
-      const props = nodeProps[nodeId];
+      const props = getNodeProps()[nodeId];
       if (props) {
         const animProp = props.find(p => p.key === 'animProgress');
         if (animProp) animProp.value = animProgressValue.toFixed(2);
@@ -1001,10 +1126,14 @@
   // ─── Phase 2: Link Click Listeners ───────────────────────────────────────
 
   function setupLinkListeners() {
+    const p = window.__portfolio || {};
+    // Extract username from github URL: "https://github.com/username" → "github.com/username"
+    const githubDisplay = p.github ? p.github.replace('https://', '') : 'github.com';
+
     // GitHub links — scoped to dev mode content area
     scopedQueryAll('a[href*="github.com"]').forEach(el => {
       const click = () => {
-        if (isDevMode) addLog('info', 'Launching external URL: github.com/vatsaljaganwala');
+        if (isDevMode) addLog('info', `Launching external URL: ${githubDisplay}`);
       };
       el.addEventListener('click', click);
       linkListeners.push({ el, click });
@@ -1177,7 +1306,7 @@
 
     setTimeout(() => {
       if (isDevMode) {
-        addLog('info', `Reloaded 1 of 847 libraries in ${ms}ms.`);
+        addLog('info', `Reloaded 1 of ${(window.__portfolio || {}).projectCount ? 800 + (window.__portfolio.projectCount * 8) : 847} libraries in ${ms}ms.`);
         addLog('debug', `Hot reload #${hotReloadCount} complete. UI updated.`);
       }
     }, ms + 100);
