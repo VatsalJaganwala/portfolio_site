@@ -1,4 +1,4 @@
-﻿/**
+/**
  * DevMode — Flutter DevTools Easter Egg
  * Phase 1 + Phase 2 + Phase 3 interactivity.
  *
@@ -164,17 +164,13 @@
     if (contentArea.dataset.populated === 'true') return;
 
     // The real page content is the first child div of the app root.
-    // It has class 'pt-navbar' and contains all sections.
     const realContent = document.querySelector('body > div > div.pt-navbar');
     if (!realContent) return;
 
     const clone = realContent.cloneNode(true);
-    // Remove any IDs from the clone to avoid duplicate IDs in the DOM.
-    // devmode.js uses scopedById/scopedQuery which search inside #dt-content-area,
-    // so section IDs need to be present — we keep them but prefix with 'dt-'.
-    clone.querySelectorAll('[id]').forEach(el => {
-      el.id = 'dt-' + el.id;
-    });
+    // Keep all IDs intact — scopedById() searches inside #dt-content-area first,
+    // so it will find these cloned elements rather than the original page elements.
+    // No prefixing needed; the scoping handles disambiguation.
 
     contentArea.appendChild(clone);
     contentArea.dataset.populated = 'true';
@@ -424,13 +420,13 @@
     // Widget count: rough estimate based on actual content size
     const widgetCount = 800 + (p.projectCount || 0) * 8 + (p.experienceCount || 0) * 6;
     const logs = [
-      [0,    'info',    `Portfolio initialised. Rendering ${widgetCount} widgets...`],
-      [300,  'info',    'Theme: dark. Platform: web.'],
-      [600,  'debug',   'Hot restart not available in production build.'],
-      [900,  'info',    'DevTools connected. Inspector active.'],
+      [0, 'info', `Portfolio initialised. Rendering ${widgetCount} widgets...`],
+      [300, 'info', 'Theme: dark. Platform: web.'],
+      [600, 'debug', 'Hot restart not available in production build.'],
+      [900, 'info', 'DevTools connected. Inspector active.'],
       [1200, 'warning', 'setState() called 3 times during build. Consider optimising.'],
-      [1500, 'debug',   'Scroll controller attached to SingleChildScrollView.'],
-      [1800, 'info',    'Welcome, visitor. Portfolio ready for inspection.'],
+      [1500, 'debug', 'Scroll controller attached to SingleChildScrollView.'],
+      [1800, 'info', 'Welcome, visitor. Portfolio ready for inspection.'],
     ];
     logs.forEach(([delay, level, msg]) => {
       setTimeout(() => { if (isDevMode) addLog(level, msg); }, delay);
@@ -591,39 +587,39 @@
     const props = {};
 
     // Root / structural nodes
-    props['material-app']    = [{ key: 'title', value: `"${p.name || ''}"`, type: '' }, { key: 'debugShowCheckedModeBanner', value: 'false', type: 'type-bool' }, { key: 'themeMode', value: 'ThemeMode.dark', type: 'type-enum' }, { key: 'locale', value: 'Locale("en", "IN")', type: 'type-ref' }];
-    props['scaffold']        = [{ key: 'backgroundColor', value: 'Color(0xFF0D0D0D)', type: 'type-ref' }, { key: 'resizeToAvoidBottomInset', value: 'true', type: 'type-bool' }];
-    props['navbar']          = [{ key: 'name', value: `"${(p.name || '').split(' ')[0].toLowerCase()}"`, type: '' }, { key: 'email', value: `"${p.email || ''}"`, type: '' }, { key: 'position', value: 'fixed', type: 'type-enum' }, { key: 'height', value: '60.0', type: 'type-num' }];
-    props['body']            = [{ key: 'scrollDirection', value: 'Axis.vertical', type: 'type-enum' }, { key: 'physics', value: 'BouncingScrollPhysics()', type: 'type-ref' }, { key: 'child', value: 'Column', type: 'type-ref' }];
+    props['material-app'] = [{ key: 'title', value: `"${p.name || ''}"`, type: '' }, { key: 'debugShowCheckedModeBanner', value: 'false', type: 'type-bool' }, { key: 'themeMode', value: 'ThemeMode.dark', type: 'type-enum' }, { key: 'locale', value: 'Locale("en", "IN")', type: 'type-ref' }];
+    props['scaffold'] = [{ key: 'backgroundColor', value: 'Color(0xFF0D0D0D)', type: 'type-ref' }, { key: 'resizeToAvoidBottomInset', value: 'true', type: 'type-bool' }];
+    props['navbar'] = [{ key: 'name', value: `"${(p.name || '').split(' ')[0].toLowerCase()}"`, type: '' }, { key: 'email', value: `"${p.email || ''}"`, type: '' }, { key: 'position', value: 'fixed', type: 'type-enum' }, { key: 'height', value: '60.0', type: 'type-num' }];
+    props['body'] = [{ key: 'scrollDirection', value: 'Axis.vertical', type: 'type-enum' }, { key: 'physics', value: 'BouncingScrollPhysics()', type: 'type-ref' }, { key: 'child', value: 'Column', type: 'type-ref' }];
 
     // Hero
-    props['hero']            = [{ key: 'name', value: `"${p.name || ''}"`, type: '' }, { key: 'title', value: `"${p.title || ''}"`, type: '' }, { key: 'location', value: `"${p.location || ''}"`, type: '' }, { key: 'projectCount', value: String(p.projectCount || 0), type: 'type-num' }, { key: 'osPackages', value: String(p.osCount || 0), type: 'type-num' }, { key: 'isHovered', value: 'false', type: 'type-live' }];
-    props['hero-cta-work']   = [{ key: 'label', value: '"View my work →"', type: '' }, { key: 'href', value: '"#projects"', type: '' }, { key: 'variant', value: 'ButtonVariant.primary', type: 'type-enum' }];
-    props['hero-cta-contact']= [{ key: 'label', value: '"Contact ↗"', type: '' }, { key: 'href', value: '"#contact"', type: '' }, { key: 'variant', value: 'ButtonVariant.ghost', type: 'type-enum' }];
-    props['hero-code-card']  = [{ key: 'name', value: `"${p.name || ''}"`, type: '' }, { key: 'role', value: `"${p.title || ''}"`, type: '' }, { key: 'location', value: `"${p.location || ''}"`, type: '' }, { key: 'isAvailable', value: 'true', type: 'type-bool' }];
+    props['hero'] = [{ key: 'name', value: `"${p.name || ''}"`, type: '' }, { key: 'title', value: `"${p.title || ''}"`, type: '' }, { key: 'location', value: `"${p.location || ''}"`, type: '' }, { key: 'projectCount', value: String(p.projectCount || 0), type: 'type-num' }, { key: 'osPackages', value: String(p.osCount || 0), type: 'type-num' }, { key: 'isHovered', value: 'false', type: 'type-live' }];
+    props['hero-cta-work'] = [{ key: 'label', value: '"View my work →"', type: '' }, { key: 'href', value: '"#projects"', type: '' }, { key: 'variant', value: 'ButtonVariant.primary', type: 'type-enum' }];
+    props['hero-cta-contact'] = [{ key: 'label', value: '"Contact ↗"', type: '' }, { key: 'href', value: '"#contact"', type: '' }, { key: 'variant', value: 'ButtonVariant.ghost', type: 'type-enum' }];
+    props['hero-code-card'] = [{ key: 'name', value: `"${p.name || ''}"`, type: '' }, { key: 'role', value: `"${p.title || ''}"`, type: '' }, { key: 'location', value: `"${p.location || ''}"`, type: '' }, { key: 'isAvailable', value: 'true', type: 'type-bool' }];
 
     // Projects
     props['projects'] = [{ key: 'itemCount', value: String(p.projectCount || 0), type: 'type-num' }, { key: 'scrollDir', value: 'Axis.vertical', type: 'type-enum' }, { key: 'padding', value: 'EdgeInsets.all(24.0)', type: 'type-ref' }, { key: 'isVisible', value: 'true', type: 'type-live' }];
     const projData = p.projects || {};
     Object.entries(projData).forEach(([id, proj]) => {
       props[id] = [
-        { key: 'title',       value: `"${proj.title || ''}"`,     type: '' },
-        { key: 'platforms',   value: `"${proj.platforms || ''}"`, type: '' },
-        { key: 'tech',        value: `"${proj.tech || ''}"`,      type: '' },
-        { key: 'isHovered',   value: 'false',                     type: 'type-live' },
-        { key: 'animProgress',value: '0.0',                       type: 'type-live' },
+        { key: 'title', value: `"${proj.title || ''}"`, type: '' },
+        { key: 'platforms', value: `"${proj.platforms || ''}"`, type: '' },
+        { key: 'tech', value: `"${proj.tech || ''}"`, type: '' },
+        { key: 'isHovered', value: 'false', type: 'type-live' },
+        { key: 'animProgress', value: '0.0', type: 'type-live' },
       ];
     });
 
     // About
     const exp0 = Object.values(p.experience || {})[0] || {};
-    props['about']           = [{ key: 'name', value: `"${p.name || ''}"`, type: '' }, { key: 'role', value: `"${exp0.jobTitle || ''}"`, type: '' }, { key: 'company', value: `"${exp0.company || ''}"`, type: '' }, { key: 'location', value: `"${p.location || ''}"`, type: '' }, { key: 'since', value: `"${exp0.startDate || ''}"`, type: '' }, { key: 'isAnimated', value: 'true', type: 'type-bool' }];
-    props['about-blockquote']= [{ key: 'borderColor', value: 'Color(0xFF4ADE80)', type: 'type-ref' }];
-    props['about-code']      = [{ key: 'firstName', value: `"${(p.name || '').split(' ')[0].toLowerCase()}"`, type: '' }, { key: 'isAvailable', value: 'true', type: 'type-bool' }];
-    props['about-status']    = [{ key: 'available', value: 'true', type: 'type-bool' }, { key: 'label', value: '"Available for new opportunities"', type: '' }];
+    props['about'] = [{ key: 'name', value: `"${p.name || ''}"`, type: '' }, { key: 'role', value: `"${exp0.jobTitle || ''}"`, type: '' }, { key: 'company', value: `"${exp0.company || ''}"`, type: '' }, { key: 'location', value: `"${p.location || ''}"`, type: '' }, { key: 'since', value: `"${exp0.startDate || ''}"`, type: '' }, { key: 'isAnimated', value: 'true', type: 'type-bool' }];
+    props['about-blockquote'] = [{ key: 'borderColor', value: 'Color(0xFF4ADE80)', type: 'type-ref' }];
+    props['about-code'] = [{ key: 'firstName', value: `"${(p.name || '').split(' ')[0].toLowerCase()}"`, type: '' }, { key: 'isAvailable', value: 'true', type: 'type-bool' }];
+    props['about-status'] = [{ key: 'available', value: 'true', type: 'type-bool' }, { key: 'label', value: '"Available for new opportunities"', type: '' }];
 
     // Skills
-    props['skills']      = [{ key: 'techCount', value: '8', type: 'type-num' }, { key: 'softCount', value: '4', type: 'type-num' }, { key: 'langCount', value: '3', type: 'type-num' }];
+    props['skills'] = [{ key: 'techCount', value: '8', type: 'type-num' }, { key: 'softCount', value: '4', type: 'type-num' }, { key: 'langCount', value: '3', type: 'type-num' }];
     props['skills-tech'] = [{ key: 'group', value: '"technical_skills"', type: '' }];
     props['skills-soft'] = [{ key: 'group', value: '"soft_skills"', type: '' }];
     props['skills-lang'] = [{ key: 'group', value: '"languages"', type: '' }];
@@ -632,11 +628,11 @@
     props['experience'] = [{ key: 'entryCount', value: String(p.experienceCount || 0), type: 'type-num' }, { key: 'layout', value: '"vertical timeline"', type: '' }];
     Object.entries(p.experience || {}).forEach(([id, exp]) => {
       props[id] = [
-        { key: 'jobTitle',         value: `"${exp.jobTitle || ''}"`,         type: '' },
-        { key: 'company',          value: `"${exp.company || ''}"`,          type: '' },
-        { key: 'location',         value: `"${exp.location || ''}"`,         type: '' },
-        { key: 'startDate',        value: `"${exp.startDate || ''}"`,        type: '' },
-        { key: 'endDate',          value: `"${exp.endDate || ''}"`,          type: '' },
+        { key: 'jobTitle', value: `"${exp.jobTitle || ''}"`, type: '' },
+        { key: 'company', value: `"${exp.company || ''}"`, type: '' },
+        { key: 'location', value: `"${exp.location || ''}"`, type: '' },
+        { key: 'startDate', value: `"${exp.startDate || ''}"`, type: '' },
+        { key: 'endDate', value: `"${exp.endDate || ''}"`, type: '' },
         { key: 'responsibilities', value: String(exp.responsibilities || 0), type: 'type-num' },
       ];
     });
@@ -646,9 +642,9 @@
     props['open-source'] = [{ key: 'packages', value: String(p.osCount || 0), type: 'type-num' }, { key: 'layout', value: '"two-column grid"', type: '' }];
     Object.entries(p.openSource || {}).forEach(([id, os]) => {
       props[id] = [
-        { key: 'name',     value: `"${os.name || ''}"`, type: '' },
-        { key: 'role',     value: `"${os.role || ''}"`, type: '' },
-        { key: 'tech',     value: `"${os.tech || ''}"`, type: '' },
+        { key: 'name', value: `"${os.name || ''}"`, type: '' },
+        { key: 'role', value: `"${os.role || ''}"`, type: '' },
+        { key: 'tech', value: `"${os.tech || ''}"`, type: '' },
         { key: 'features', value: String(os.features || 0), type: 'type-num' },
       ];
     });
@@ -657,9 +653,9 @@
     props['education'] = [{ key: 'entryCount', value: String(p.educationCount || 0), type: 'type-num' }, { key: 'layout', value: '"list"', type: '' }];
     Object.entries(p.education || {}).forEach(([id, edu]) => {
       const row = [
-        { key: 'degree',      value: `"${edu.degree || ''}"`,      type: '' },
+        { key: 'degree', value: `"${edu.degree || ''}"`, type: '' },
         { key: 'institution', value: `"${edu.institution || ''}"`, type: '' },
-        { key: 'duration',    value: `"${edu.duration || ''}"`,    type: '' },
+        { key: 'duration', value: `"${edu.duration || ''}"`, type: '' },
       ];
       if (edu.cgpa) row.push({ key: 'cgpa', value: `"${edu.cgpa}"`, type: '' });
       props[id] = row;
@@ -669,18 +665,18 @@
     props['achievements'] = [{ key: 'count', value: String(p.achievementCount || 0), type: 'type-num' }, { key: 'layout', value: '"two-column grid"', type: '' }];
     Object.entries(p.achievements || {}).forEach(([id, ach]) => {
       props[id] = [
-        { key: 'title',        value: `"${ach.title || ''}"`,        type: '' },
+        { key: 'title', value: `"${ach.title || ''}"`, type: '' },
         { key: 'organization', value: `"${ach.organization || ''}"`, type: '' },
-        { key: 'date',         value: `"${ach.date || ''}"`,         type: '' },
+        { key: 'date', value: `"${ach.date || ''}"`, type: '' },
       ];
     });
 
     // Contact
-    props['contact']          = [{ key: 'email', value: `"${p.email || ''}"`, type: '' }, { key: 'phone', value: `"${p.phone || ''}"`, type: '' }, { key: 'linkedin', value: `"${p.linkedin || ''}"`, type: '' }, { key: 'github', value: `"${p.github || ''}"`, type: '' }, { key: 'hiringSignal', value: 'true', type: 'type-live' }];
-    props['contact-email']    = [{ key: 'label', value: '"Send an email"', type: '' }, { key: 'href', value: `"mailto:${p.email || ''}"`, type: '' }, { key: 'variant', value: 'ButtonVariant.primary', type: 'type-enum' }];
+    props['contact'] = [{ key: 'email', value: `"${p.email || ''}"`, type: '' }, { key: 'phone', value: `"${p.phone || ''}"`, type: '' }, { key: 'linkedin', value: `"${p.linkedin || ''}"`, type: '' }, { key: 'github', value: `"${p.github || ''}"`, type: '' }, { key: 'hiringSignal', value: 'true', type: 'type-live' }];
+    props['contact-email'] = [{ key: 'label', value: '"Send an email"', type: '' }, { key: 'href', value: `"mailto:${p.email || ''}"`, type: '' }, { key: 'variant', value: 'ButtonVariant.primary', type: 'type-enum' }];
     props['contact-linkedin'] = [{ key: 'label', value: '"LinkedIn"', type: '' }, { key: 'href', value: `"${p.linkedin || ''}"`, type: '' }, { key: 'variant', value: 'ButtonVariant.primary', type: 'type-enum' }];
-    props['contact-github']   = [{ key: 'label', value: '"GitHub"', type: '' }, { key: 'href', value: `"${p.github || ''}"`, type: '' }, { key: 'variant', value: 'ButtonVariant.ghost', type: 'type-enum' }];
-    props['contact-footer']   = [{ key: 'builtWith', value: '"Jaspr"', type: '' }, { key: 'year', value: String(new Date().getFullYear()), type: 'type-num' }];
+    props['contact-github'] = [{ key: 'label', value: '"GitHub"', type: '' }, { key: 'href', value: `"${p.github || ''}"`, type: '' }, { key: 'variant', value: 'ButtonVariant.ghost', type: 'type-enum' }];
+    props['contact-footer'] = [{ key: 'builtWith', value: '"Jaspr"', type: '' }, { key: 'year', value: String(new Date().getFullYear()), type: 'type-num' }];
 
     // FAB
     props['fab'] = [{ key: 'elevation', value: '6.0', type: 'type-num' }, { key: 'tooltip', value: '"Hire me"', type: '' }, { key: 'onPressed', value: 'HireCallback', type: 'type-ref' }];
@@ -709,15 +705,15 @@
     container.innerHTML = `
       <span class="dt-props-section-title">Widget properties</span>
       ${props.map(p => {
-        const liveHtml = p.type === 'type-live'
-          ? `<div class="dt-live-dot"></div>`
-          : '';
-        return `<div class="dt-prop-row">
+      const liveHtml = p.type === 'type-live'
+        ? `<div class="dt-live-dot"></div>`
+        : '';
+      return `<div class="dt-prop-row">
           <span class="dt-prop-key">${p.key}</span>
           <span class="dt-prop-sep">:</span>
           <span class="dt-prop-val ${p.type}">${liveHtml}${escHtml(p.value)}</span>
         </div>`;
-      }).join('')}
+    }).join('')}
     `;
   }
 
@@ -725,15 +721,15 @@
 
   // Map section element IDs → tree node IDs
   const sectionToNodeId = {
-    'hero':         'hero',
-    'projects':     'projects',
-    'about':        'about',
-    'skills':       'skills',
-    'experience':   'experience',
-    'open-source':  'open-source',
-    'education':    'education',
+    'hero': 'hero',
+    'projects': 'projects',
+    'about': 'about',
+    'skills': 'skills',
+    'experience': 'experience',
+    'open-source': 'open-source',
+    'education': 'education',
     'achievements': 'achievements',
-    'contact':      'contact',
+    'contact': 'contact',
   };
 
   function setupScrollSync() {
@@ -815,7 +811,7 @@
       if (treeBody) {
         const nodeRect = node.getBoundingClientRect();
         const bodyRect = treeBody.getBoundingClientRect();
-        const nodeTopRel  = nodeRect.top  - bodyRect.top;   // px from visible top of tree
+        const nodeTopRel = nodeRect.top - bodyRect.top;   // px from visible top of tree
         const nodeBottomRel = nodeRect.bottom - bodyRect.top;
 
         if (nodeTopRel < 20) {
@@ -833,15 +829,15 @@
 
   // Map section IDs → display labels
   const sectionLabels = {
-    'hero':         'HeroSection',
-    'projects':     'ProjectsSection',
-    'about':        'AboutSection',
-    'skills':       'SkillsSection',
-    'experience':   'ExperienceTimeline',
-    'open-source':  'OpenSourceSection',
-    'education':    'EducationSection',
+    'hero': 'HeroSection',
+    'projects': 'ProjectsSection',
+    'about': 'AboutSection',
+    'skills': 'SkillsSection',
+    'experience': 'ExperienceTimeline',
+    'open-source': 'OpenSourceSection',
+    'education': 'EducationSection',
     'achievements': 'AchievementsSection',
-    'contact':      'ContactSection',
+    'contact': 'ContactSection',
   };
 
   function showBbox(sectionId) {
@@ -923,15 +919,15 @@
   // ─── Phase 2: Section Annotation Labels ──────────────────────────────────
 
   const sectionAnnotations = {
-    'hero':         '// hero_section.dart',
-    'projects':     '// projects_section.dart',
-    'about':        '// about_me.dart',
-    'skills':       '// skills_section.dart',
-    'experience':   '// experience_timeline.dart',
-    'open-source':  '// open_source_section.dart',
-    'education':    '// education_section.dart',
+    'hero': '// hero_section.dart',
+    'projects': '// projects_section.dart',
+    'about': '// about_me.dart',
+    'skills': '// skills_section.dart',
+    'experience': '// experience_timeline.dart',
+    'open-source': '// open_source_section.dart',
+    'education': '// education_section.dart',
     'achievements': '// achievements_section.dart',
-    'contact':      '// contact_section.dart',
+    'contact': '// contact_section.dart',
   };
 
   function injectAnnotations() {
@@ -1001,8 +997,8 @@
   // sectionLogMap: counts are read lazily from window.__portfolio at fire time.
   function buildSectionLogMap() {
     return {
-      'hero':         () => addLog('debug', 'Hero widget entered hovered state. Rebuilding.'),
-      'projects':     () => {
+      'hero': () => addLog('debug', 'Hero widget entered hovered state. Rebuilding.'),
+      'projects': () => {
         // Read count lazily — window.__portfolio is guaranteed set by now
         const count = (window.__portfolio || {}).projectCount
           // Fallback: count actual project card elements in the scoped DOM
@@ -1010,17 +1006,17 @@
           || 0;
         addLog('info', `ProjectsSection entered viewport. ListView rendering ${count} items.`);
       },
-      'about':        () => addLog('info',  'about_me.dart loaded. Static analysis: 0 errors, 0 warnings.'),
-      'skills':       () => addLog('debug', 'SkillsSection mounted. Rendering pill groups.'),
-      'experience':   () => {
+      'about': () => addLog('info', 'about_me.dart loaded. Static analysis: 0 errors, 0 warnings.'),
+      'skills': () => addLog('debug', 'SkillsSection mounted. Rendering pill groups.'),
+      'experience': () => {
         const count = (window.__portfolio || {}).experienceCount || 0;
         addLog('info', `ExperienceTimeline mounted. Entries: ${count}. Git log attached.`);
       },
-      'open-source':  () => {
+      'open-source': () => {
         const count = (window.__portfolio || {}).osCount || 0;
         addLog('info', `OpenSourceSection mounted. Packages: ${count}.`);
       },
-      'education':    () => {
+      'education': () => {
         const count = (window.__portfolio || {}).educationCount || 0;
         addLog('debug', `EducationSection mounted. Entries: ${count}.`);
       },
@@ -1028,7 +1024,7 @@
         const count = (window.__portfolio || {}).achievementCount || 0;
         addLog('debug', `AchievementsSection mounted. Count: ${count}.`);
       },
-      'contact':      () => addLog('info',  'ContactSection entered viewport.'),
+      'contact': () => addLog('info', 'ContactSection entered viewport.'),
     };
   }
 
@@ -1069,7 +1065,7 @@
         if (isDevMode) addLog('warning', 'HireButton() tapped. Initiating contact sequence...');
       };
       hireBtn.addEventListener('mouseenter', enter);
-      sectionListeners.push({ el: hireBtn, enter, leave: () => {} });
+      sectionListeners.push({ el: hireBtn, enter, leave: () => { } });
     }
   }
 
@@ -1294,7 +1290,7 @@
 
     nodes.forEach(node => {
       const label = (node.querySelector('.tree-node-name')?.textContent || '').toLowerCase();
-      const args  = (node.querySelector('.tree-node-args')?.textContent  || '').toLowerCase();
+      const args = (node.querySelector('.tree-node-args')?.textContent || '').toLowerCase();
       if (label.includes(query) || args.includes(query)) {
         matchingIds.add(node.dataset.node);
         // Walk up ancestors
@@ -1309,7 +1305,7 @@
 
     nodes.forEach(node => {
       const id = node.dataset.node;
-      const isMatch    = matchingIds.has(id);
+      const isMatch = matchingIds.has(id);
       const isAncestor = ancestorIds.has(id);
       node.style.display = (isMatch || isAncestor) ? '' : 'none';
 
@@ -1376,12 +1372,12 @@
     shortcutsVisible = true;
 
     const shortcuts = [
-      { key: 'q',   desc: 'Exit DevTools' },
-      { key: 'r',   desc: 'Hot reload' },
-      { key: '?',   desc: 'Toggle this panel' },
-      { key: 'f',   desc: 'Focus widget search' },
-      { key: 'c',   desc: 'Clear console' },
-      { key: '/',   desc: 'Toggle console' },
+      { key: 'q', desc: 'Exit DevTools' },
+      { key: 'r', desc: 'Hot reload' },
+      { key: '?', desc: 'Toggle this panel' },
+      { key: 'f', desc: 'Focus widget search' },
+      { key: 'c', desc: 'Clear console' },
+      { key: '/', desc: 'Toggle console' },
       { key: 'Esc', desc: 'Close overlays' },
     ];
 

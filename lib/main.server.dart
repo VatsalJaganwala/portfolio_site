@@ -95,6 +95,7 @@ void main() {
       link(href: 'devtools.css', rel: 'stylesheet'),
       script(src: 'animate.js'),
       script(src: 'devmode.js'),
+      script(src: 'devmode_eggs.js'),
     ],
     body: const App(),
   ));

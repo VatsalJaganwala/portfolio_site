@@ -26,6 +26,20 @@ class DebugConsole extends StatelessComponent {
       // Body wrapper — this collapses, not the header
       div(id: 'dt-console-body-wrap', classes: 'dt-console-body-wrap', [
         div(id: 'dt-console-body', classes: 'dt-console-body', []),
+        // Console input — Phase 4 easter egg command router
+        div(classes: 'dt-console-input-row', [
+          span(classes: 'dt-console-prompt', [.text('>')]),
+          input(
+            id: 'dt-console-input',
+            classes: 'dt-console-input',
+            type: InputType.text,
+            attributes: {
+              'placeholder': 'Type a command... (try: help)',
+              'autocomplete': 'off',
+              'spellcheck': 'false',
+            },
+          ),
+        ]),
       ]),
     ]);
   }

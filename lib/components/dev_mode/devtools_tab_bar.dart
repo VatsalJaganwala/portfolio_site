@@ -8,9 +8,13 @@ class DevToolsTabBar extends StatelessComponent {
   @override
   Component build(BuildContext context) {
     return div(classes: 'dt-tab-bar', [
-      // Left: Flutter icon + app name
+      // Left: Flutter icon (clickable — 5× rapid clicks triggers EGG-76) + app name
       div(classes: 'dt-tab-bar-left', [
-        _flutterIcon(),
+        div(
+          id: 'dt-flutter-logo-btn',
+          classes: 'dt-flutter-logo-btn',
+          [_flutterIcon()],
+        ),
         span(classes: 'dt-tab-bar-app-name', [
           .text('portfolio | Flutter DevTools'),
         ]),
@@ -25,8 +29,11 @@ class DevToolsTabBar extends StatelessComponent {
         _tab('Logging', 'logging'),
       ]),
 
-      // Right: connection status + exit button slot
+      // Right: egg counter + connection status + exit button slot
       div(classes: 'dt-tab-bar-right', [
+        // Easter egg counter — updated by devmode.js
+        span(id: 'dt-egg-counter', classes: 'dt-egg-badge', [.text('🥚 0/20')]),
+        div(classes: 'dt-tab-bar-sep', []),
         div(classes: 'dt-conn-dot', []),
         span(classes: 'dt-conn-text', [.text('Connected')]),
         // Exit button injected here by devmode.js
