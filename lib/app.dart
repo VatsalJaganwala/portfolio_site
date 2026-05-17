@@ -2,6 +2,7 @@ import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
 
 import 'components/nav_bar.dart';
+import 'components/whatsapp_widget.dart';
 import 'components/dev_mode/dev_mode_pill.dart';
 import 'components/dev_mode/flutter_run_overlay.dart';
 import 'components/dev_mode/dev_mode_shell.dart';
@@ -34,6 +35,8 @@ class App extends StatelessComponent {
         const AchievementsSection(),
         const ContactSection(),
       ]),
+      // WhatsApp floating widget — QR card on desktop, FAB on mobile.
+      const WhatsAppWidget(),
       // DevMode components (hidden until activated by JS).
       // Content is cloned from the real DOM above by devmode.js — no duplicate
       // headings are rendered in the static HTML.

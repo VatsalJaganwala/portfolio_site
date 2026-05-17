@@ -10,10 +10,8 @@ class HeroSection extends StatelessComponent {
   Component build(BuildContext context) {
     final pi = portfolio.personalInformation;
     final nameParts = pi.name.split(' ');
-    final firstName =
-        nameParts.isNotEmpty ? nameParts.first.toLowerCase() : pi.name.toLowerCase();
-    final lastName =
-        nameParts.length > 1 ? nameParts.sublist(1).join(' ').toLowerCase() : '';
+    final firstName = nameParts.isNotEmpty ? nameParts.first.toLowerCase() : pi.name.toLowerCase();
+    final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ').toLowerCase() : '';
 
     final projectCount = portfolio.projects.length;
     final osCount = portfolio.openSourceContributions.length;
@@ -93,16 +91,21 @@ class HeroSection extends StatelessComponent {
                     .text("'${portfolio.skills.technicalSkills[i]}',"),
                   ]),
                 ]),
-              _cl([span(classes: 'code-normal', [.text('  ];')])]),
-              br(),
               _cl([
-                span(classes: 'code-normal', [.text('  ')]),
-                span(classes: 'code-keyword', [.text('bool ')]),
-                span(classes: 'code-normal', [.text('get isAvailable => ')]),
-                span(classes: 'code-keyword', [.text('${pi.isAvailable}')]),
-                span(classes: 'code-normal', [.text(';')]),
+                span(classes: 'code-normal', [.text('  ];')]),
               ]),
-              _cl([span(classes: 'code-normal', [.text('}')])]),
+              br(),
+              if (pi.isAvailable)
+                _cl([
+                  span(classes: 'code-normal', [.text('  ')]),
+                  span(classes: 'code-keyword', [.text('bool ')]),
+                  span(classes: 'code-normal', [.text('get isAvailable => ')]),
+                  span(classes: 'code-keyword', [.text('${pi.isAvailable}')]),
+                  span(classes: 'code-normal', [.text(';')]),
+                ]),
+              _cl([
+                span(classes: 'code-normal', [.text('}')]),
+              ]),
             ]),
           ]),
         ]),

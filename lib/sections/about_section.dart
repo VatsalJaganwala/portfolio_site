@@ -9,13 +9,11 @@ class AboutSection extends StatelessComponent {
   @override
   Component build(BuildContext context) {
     final pi = portfolio.personalInformation;
-    final currentJob =
-        portfolio.workExperience.isNotEmpty ? portfolio.workExperience.first : null;
+    final currentJob = portfolio.workExperience.isNotEmpty ? portfolio.workExperience.first : null;
 
     final sentences = portfolio.summary.split('. ');
     final pullQuote = sentences.isNotEmpty ? '${sentences.first}.' : portfolio.summary;
-    final remainingSummary =
-        sentences.length > 1 ? sentences.skip(1).join('. ').trim() : '';
+    final remainingSummary = sentences.length > 1 ? sentences.skip(1).join('. ').trim() : '';
 
     final codeLines = [
       '// about_${pi.firstName}.dart',
@@ -28,7 +26,7 @@ class AboutSection extends StatelessComponent {
       '  skills: [',
       ...portfolio.skills.technicalSkills.take(5).map((skill) => "    '$skill',"),
       '  ],',
-      '  isAvailable: ${pi.isAvailable},',
+      if (pi.isAvailable) '  isAvailable: ${pi.isAvailable},',
       ');',
     ];
 
@@ -47,10 +45,8 @@ class AboutSection extends StatelessComponent {
             div(classes: 'two-col-60-40', [
               // Left column
               div([
-                if (sentences.isNotEmpty)
-                  blockquote(classes: 'about-blockquote', [.text(pullQuote)]),
-                if (remainingSummary.isNotEmpty)
-                  p(classes: 'about-body', [.text(remainingSummary)]),
+                if (sentences.isNotEmpty) blockquote(classes: 'about-blockquote', [.text(pullQuote)]),
+                if (remainingSummary.isNotEmpty) p(classes: 'about-body', [.text(remainingSummary)]),
                 div(classes: 'about-stats-grid', [
                   if (currentJob != null) ...[
                     _statCard('CURRENT ROLE', currentJob.jobTitle),
@@ -64,14 +60,13 @@ class AboutSection extends StatelessComponent {
                 div(classes: 'code-block', [
                   for (final line in codeLines) _buildCodeLine(line),
                 ]),
-                if(pi.isAvailable)
-                div(classes: 'status-card', [
-                  div(classes: 'status-dot', []),
-                  span(classes: 'status-text', [
-                    .text( 'Available for new opportunities'
-                        ),
+                if (pi.isAvailable)
+                  div(classes: 'status-card', [
+                    div(classes: 'status-dot', []),
+                    span(classes: 'status-text', [
+                      .text('Available for new opportunities'),
+                    ]),
                   ]),
-                ]),
               ]),
             ]),
           ],
@@ -92,8 +87,7 @@ class AboutSection extends StatelessComponent {
     if (line.trimLeft().startsWith('//')) {
       return div(classes: 'code-comment', [.text(line)]);
     }
-    final regex =
-        RegExp(r"'[^']*'|\b(final|class|List|bool|get|return|true|false|const)\b");
+    final regex = RegExp(r"'[^']*'|\b(final|class|List|bool|get|return|true|false|const)\b");
     final parts = <Component>[];
     int last = 0;
     for (final m in regex.allMatches(line)) {
@@ -113,7 +107,11 @@ class AboutSection extends StatelessComponent {
     }
     return div(
       classes: 'code-line',
-      parts.isEmpty ? [span(classes: 'code-normal', [.text(line)])] : parts,
+      parts.isEmpty
+          ? [
+              span(classes: 'code-normal', [.text(line)]),
+            ]
+          : parts,
     );
   }
 }

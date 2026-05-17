@@ -30,75 +30,83 @@ void main() {
     pi.location,
   ].join(', ');
 
-  runApp(Document(
-    title: '${pi.name} — ${pi.title}',
-    lang: 'en',
-    head: [
-      // ── Primary SEO ──────────────────────────────────────────────────────
-      meta(name: 'description', content: metaDescription),
-      meta(name: 'author', content: pi.name),
-      meta(name: 'keywords', content: keywords),
-      meta(name: 'viewport', content: 'width=device-width, initial-scale=1.0'),
-      meta(name: 'robots', content: 'index, follow'),
-      // ── Canonical URL ────────────────────────────────────────────────────
-      link(href: siteUrl, rel: 'canonical'),
-      // ── Favicon ──────────────────────────────────────────────────────────
-      link(href: '/favicon.ico', rel: 'icon', attributes: {'type': 'image/x-icon'}),
-      link(href: '/favicon-32x32.png', rel: 'icon', attributes: {'type': 'image/png', 'sizes': '32x32'}),
-      link(href: '/favicon-16x16.png', rel: 'icon', attributes: {'type': 'image/png', 'sizes': '16x16'}),
-      link(href: '/apple-touch-icon.png', rel: 'apple-touch-icon', attributes: {'sizes': '180x180'}),
-      link(href: '/site.webmanifest', rel: 'manifest'),
-      // ── Open Graph ───────────────────────────────────────────────────────
-      meta(attributes: {'property': 'og:type', 'content': 'website'}),
-      meta(attributes: {'property': 'og:title', 'content': '${pi.name} — ${pi.title}'}),
-      meta(attributes: {'property': 'og:description', 'content': metaDescription}),
-      meta(attributes: {'property': 'og:site_name', 'content': '${pi.name} Portfolio'}),
-      meta(attributes: {'property': 'og:url', 'content': siteUrl}),
-      meta(attributes: {'property': 'og:image', 'content': pi.ogImage}),
-      meta(attributes: {'property': 'og:image:alt', 'content': '${pi.name} — ${pi.title}'}),
-      meta(attributes: {'property': 'og:image:width', 'content': '1200'}),
-      meta(attributes: {'property': 'og:image:height', 'content': '620'}),
-      // ── Twitter Card ─────────────────────────────────────────────────────
-      meta(name: 'twitter:card', content: 'summary_large_image'),
-      meta(name: 'twitter:title', content: '${pi.name} — ${pi.title}'),
-      meta(name: 'twitter:description', content: metaDescription),
-      meta(name: 'twitter:image', content: pi.ogImage),
-      meta(name: 'twitter:image:alt', content: '${pi.name} — ${pi.title}'),
-      // ── Schema.org Person (JSON-LD) ───────────────────────────────────────
-      script(
-        attributes: {'type': 'application/ld+json'},
-        content: _buildPersonSchema(pi, siteUrl),
-      ),
-      // ── Schema.org SoftwareSourceCode — open-source packages ─────────────
-      script(
-        attributes: {'type': 'application/ld+json'},
-        content: _buildSoftwareSchemas(pi, siteUrl),
-      ),
-      // ── Portfolio data for devmode.js ─────────────────────────────────────
-      // Embedded as a <meta name="devmode-data"> tag.
-      // Jaspr renders <meta> reliably in static mode — unlike script(content:).
-      // devmode.js reads it via:
-      //   JSON.parse(document.querySelector('meta[name="devmode-data"]').content)
-      meta(name: 'devmode-data', content: _buildPortfolioJson()),
-      // ── Fonts ────────────────────────────────────────────────────────────
-      link(href: 'https://fonts.googleapis.com', rel: 'preconnect'),
-      link(
-        href: 'https://fonts.gstatic.com',
-        rel: 'preconnect',
-        attributes: {'crossorigin': ''},
-      ),
-      link(
-        href: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap',
-        rel: 'stylesheet',
-      ),
-      link(href: 'styles.css', rel: 'stylesheet'),
-      link(href: 'devtools.css', rel: 'stylesheet'),
-      script(src: 'animate.js'),
-      script(src: 'devmode.js'),
-      script(src: 'devmode_eggs.js'),
-    ],
-    body: const App(),
-  ));
+  runApp(
+    Document(
+      title: '${pi.name} — ${pi.title}',
+      lang: 'en',
+      head: [
+        // ── Primary SEO ──────────────────────────────────────────────────────
+        meta(name: 'description', content: metaDescription),
+        meta(name: 'author', content: pi.name),
+        meta(name: 'keywords', content: keywords),
+        meta(name: 'viewport', content: 'width=device-width, initial-scale=1.0'),
+        meta(name: 'robots', content: 'index, follow'),
+        // ── Canonical URL ────────────────────────────────────────────────────
+        link(href: siteUrl, rel: 'canonical'),
+        // ── Favicon ──────────────────────────────────────────────────────────
+        link(href: '/favicon.ico', rel: 'icon', attributes: {'type': 'image/x-icon'}),
+        link(href: '/favicon-32x32.png', rel: 'icon', attributes: {'type': 'image/png', 'sizes': '32x32'}),
+        link(href: '/favicon-16x16.png', rel: 'icon', attributes: {'type': 'image/png', 'sizes': '16x16'}),
+        link(href: '/apple-touch-icon.png', rel: 'apple-touch-icon', attributes: {'sizes': '180x180'}),
+        link(href: '/site.webmanifest', rel: 'manifest'),
+        // ── Open Graph ───────────────────────────────────────────────────────
+        meta(attributes: {'property': 'og:type', 'content': 'website'}),
+        meta(attributes: {'property': 'og:title', 'content': '${pi.name} — ${pi.title}'}),
+        meta(attributes: {'property': 'og:description', 'content': metaDescription}),
+        meta(attributes: {'property': 'og:site_name', 'content': '${pi.name} Portfolio'}),
+        meta(attributes: {'property': 'og:url', 'content': siteUrl}),
+        meta(attributes: {'property': 'og:image', 'content': pi.ogImage}),
+        meta(attributes: {'property': 'og:image:alt', 'content': '${pi.name} — ${pi.title}'}),
+        meta(attributes: {'property': 'og:image:width', 'content': '1200'}),
+        meta(attributes: {'property': 'og:image:height', 'content': '620'}),
+        // ── Twitter Card ─────────────────────────────────────────────────────
+        meta(name: 'twitter:card', content: 'summary_large_image'),
+        meta(name: 'twitter:title', content: '${pi.name} — ${pi.title}'),
+        meta(name: 'twitter:description', content: metaDescription),
+        meta(name: 'twitter:image', content: pi.ogImage),
+        meta(name: 'twitter:image:alt', content: '${pi.name} — ${pi.title}'),
+        // ── Schema.org Person (JSON-LD) ───────────────────────────────────────
+        script(
+          attributes: {'type': 'application/ld+json'},
+          content: _buildPersonSchema(pi, siteUrl),
+        ),
+        // ── Schema.org SoftwareSourceCode — open-source packages ─────────────
+        script(
+          attributes: {'type': 'application/ld+json'},
+          content: _buildSoftwareSchemas(pi, siteUrl),
+        ),
+        // ── Portfolio data for devmode.js ─────────────────────────────────────
+        // Embedded as a <meta name="devmode-data"> tag.
+        // Jaspr renders <meta> reliably in static mode — unlike script(content:).
+        // devmode.js reads it via:
+        //   JSON.parse(document.querySelector('meta[name="devmode-data"]').content)
+        meta(name: 'devmode-data', content: _buildPortfolioJson()),
+        // ── Fonts ────────────────────────────────────────────────────────────
+        link(href: 'https://fonts.googleapis.com', rel: 'preconnect'),
+        link(
+          href: 'https://fonts.gstatic.com',
+          rel: 'preconnect',
+          attributes: {'crossorigin': ''},
+        ),
+        link(
+          href:
+              'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap',
+          rel: 'stylesheet',
+        ),
+        link(href: 'styles.css', rel: 'stylesheet'),
+        link(href: 'devtools.css', rel: 'stylesheet'),
+        script(src: 'animate.js'),
+        script(src: 'devmode.js'),
+        script(src: 'devmode_eggs.js'),
+        // ── QR code styling library (UMD build, no install needed) ───────────
+        // Loaded before qr.js so QRCodeStyling is available when qr.js runs.
+        script(src: 'https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js'),
+        // ── WhatsApp QR renderer — reads #wa-qr-canvas[data-wa-url] ──────────
+        script(src: 'js/qr.js'),
+      ],
+      body: const App(),
+    ),
+  );
 }
 
 /// Builds a Schema.org Person JSON-LD structured data block.
@@ -188,7 +196,6 @@ String _countryCode(String country) {
   };
   return codes[country.toLowerCase()] ?? country;
 }
-
 
 /// Uses dart:convert jsonEncode — safe escaping, no manual string building.
 String _buildPortfolioJson() {

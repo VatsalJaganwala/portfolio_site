@@ -909,3 +909,100 @@ img { max-width: 100%; display: block; }
 .font-mono   { font-family: 'JetBrains Mono', monospace; }
 .font-display { font-family: 'Space Grotesk', sans-serif; }
 .pt-navbar   { padding-top: 60px; }
+
+/* ---------- WHATSAPP FLOATING WIDGET ---------- */
+
+/* ── Desktop QR card (visible above 768 px) ── */
+.wa-qr-card {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding-bottom: 8px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-card);
+  padding: 14px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color var(--transition), transform var(--transition),
+    box-shadow var(--transition);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+.wa-qr-card:hover {
+  border-color: #25D366;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(37, 211, 102, 0.15);
+}
+
+.wa-qr-wrapper {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+/* Container that qr-code-styling renders the SVG into */
+.wa-qr-canvas {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* The SVG element injected by qr-code-styling */
+.wa-qr-canvas svg {
+  display: block;
+  width: 120px;
+  height: 120px;
+  border-radius: 6px;
+}
+
+.wa-qr-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ── Mobile FAB (visible at 768 px and below) ── */
+.wa-fab {
+  display: none; /* hidden on desktop */
+  position: fixed;
+  bottom: 80px; /* sit above the bottom-nav bar */
+  right: 20px;
+  z-index: 900;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #25D366;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4);
+  transition: transform var(--transition), box-shadow var(--transition);
+  text-decoration: none;
+}
+.wa-fab:hover,
+.wa-fab:active {
+  transform: scale(1.08);
+  box-shadow: 0 6px 24px rgba(37, 211, 102, 0.55);
+}
+.wa-fab-icon {
+  display: block;
+  width: 28px;
+  height: 28px;
+  /* SVG fill is white — renders correctly on the green FAB background */
+  filter: brightness(0) invert(1);
+}
+
+/* Responsive swap */
+@media (max-width: 768px) {
+  .wa-qr-card { display: none; }
+  .wa-fab     { display: flex; }
+}
