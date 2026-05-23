@@ -15,7 +15,7 @@ const PortfolioData portfolio = PortfolioData(
     siteUrl: 'https://vatsaljaganwalacom.web.app',
     // OG share image — 1200×620px banner at web/images/ogImage.png.
     ogImage: 'https://vatsaljaganwalacom.web.app/images/ogImage.png',
-    isAvailable: true,
+    isAvailable: false,
   ),
 
   // ─── Summary ─────────────────────────────────────────────────────────────

@@ -1006,3 +1006,9 @@ img { max-width: 100%; display: block; }
   .wa-qr-card { display: none; }
   .wa-fab     { display: flex; }
 }
+
+/* Hide WhatsApp widget entirely when DevMode is active */
+body.devmode-active .wa-qr-card,
+body.devmode-active .wa-fab {
+  display: none !important;
+}
