@@ -243,6 +243,8 @@
     setupTreeSearch();
     showTimeBasedGreeting();
 
+    // Phase 4: fire enter hooks (devmode_eggs.js)
+    _enterHooks.forEach(fn => { try { fn(window.__devmode); } catch(e) {} });
     // Setup mobile tabs if needed
     if (isMobile()) setupMobileTabs();
   }
@@ -312,6 +314,8 @@
       removeAnnotations();
       removeCommitBadges();
       hideBbox();
+      const bboxOverlay = document.getElementById('dt-bbox-overlay');
+      if (bboxOverlay) bboxOverlay.remove();
 
       // Phase 3 cleanup
       teardownTreeSearch();
@@ -321,6 +325,9 @@
       shortcutsVisible = false;
       // Reset nodeProps cache so it rebuilds from window.__portfolio on re-entry
       _nodeProps = null;
+
+      // Phase 4: fire exit hooks (devmode_eggs.js)
+      _exitHooks.forEach(fn => { try { fn(); } catch(e) {} });
     }, 350);
   }
 
@@ -343,7 +350,11 @@
       if (e.key === 'q' || e.key === 'Q') {
         if (!inInput) handleQKey();
       } else if ((e.key === 'r' || e.key === 'R') && !inInput) {
-        handleHotReload();
+        if (e.shiftKey || e.key === 'R') {
+          handleHotRestart();
+        } else {
+          handleHotReload();
+        }
       } else if (e.key === '?' && !inInput) {
         toggleShortcutsPanel();
       } else if ((e.key === 'c' || e.key === 'C') && !inInput) {
@@ -478,17 +489,24 @@
 
     const contentArea = document.getElementById('dt-content-area');
     const perfView = document.getElementById('dt-perf-view');
+    const memView = document.getElementById('dt-memory-view');
+
+    // Hide all views first
+    if (contentArea) contentArea.style.display = '';
+    if (perfView) perfView.style.display = 'none';
+    if (memView) memView.style.display = 'none';
+    // Also hide network view if it exists
+    const netView = document.getElementById('dt-network-view');
+    if (netView) netView.style.display = 'none';
 
     if (tabId === 'performance') {
       if (contentArea) contentArea.style.display = 'none';
       if (perfView) {
         perfView.style.display = 'block';
-        // Reset bars to 0 first so the animation replays on every visit
         perfView.querySelectorAll('.dt-flame-fill').forEach(bar => {
           bar.style.transition = 'none';
           bar.style.width = '0%';
         });
-        // Force reflow, then animate to target
         void perfView.offsetWidth;
         setTimeout(() => {
           perfView.querySelectorAll('.dt-flame-fill').forEach(bar => {
@@ -501,9 +519,23 @@
       setTimeout(() => {
         if (isDevMode) addLog('warning', 'High coffee dependency detected. Performance may vary.');
       }, 800);
-    } else {
-      if (contentArea) contentArea.style.display = '';
-      if (perfView) perfView.style.display = 'none';
+      // Phase 5: inject CPU profile button via eggs.js hook
+      setTimeout(() => {
+        if (window.__devmode && window.__devmode.onPerfTabOpen) {
+          window.__devmode.onPerfTabOpen();
+        }
+      }, 200);
+    } else if (tabId === 'memory') {
+      if (contentArea) contentArea.style.display = 'none';
+      // Delegate to eggs.js via the hook
+      if (window.__devmode && window.__devmode.switchToMemory) {
+        window.__devmode.switchToMemory();
+      }
+    } else if (tabId === 'network') {
+      if (contentArea) contentArea.style.display = 'none';
+      if (window.__devmode && window.__devmode.switchToNetwork) {
+        window.__devmode.switchToNetwork();
+      }
     }
   }
 
@@ -525,6 +557,11 @@
   function onNodeClick(nodeId, section) {
     inspectedNodeId = nodeId;
     renderProperties();
+
+    // Phase 5: inject layout explorer + Jaspr meta via eggs.js hooks
+    if (window.__devmode && window.__devmode.onNodeClick) {
+      window.__devmode.onNodeClick(nodeId);
+    }
 
     // Phase 2: scroll content to section
     if (section) {
@@ -694,6 +731,10 @@
   function renderProperties() {
     const container = document.getElementById('dt-props-inspected');
     if (!container) return;
+
+    if (window.__devmode && window.__devmode.isRecruiterMode && window.__devmode.isRecruiterMode()) {
+      return;
+    }
 
     const nodeProps = getNodeProps();
     const props = inspectedNodeId ? nodeProps[inspectedNodeId] : null;
@@ -1359,6 +1400,37 @@
 
   // ─── Phase 3: Keyboard Shortcuts Panel ───────────────────────────────────
 
+  function handleHotRestart() {
+    // Full white flash, clear logs, re-run initial sequence
+    const shell = document.getElementById('devtools-shell');
+    if (shell) {
+      const flash = document.createElement('div');
+      flash.className = 'dt-hot-restart-flash';
+      shell.appendChild(flash);
+      setTimeout(() => flash.remove(), 400);
+    }
+    clearLogs();
+    addCommand('> R');
+    const restartLogs = [
+      [0,    'info',  'Performing hot restart...'],
+      [300,  'info',  'Restarting application...'],
+      [600,  'info',  'Initializing DevTools connection...'],
+      [900,  'info',  `Portfolio initialised. Rendering 847 widgets...`],
+      [1200, 'info',  'DevTools connected. Inspector active.'],
+      [1500, 'info',  'Welcome back, visitor. All state reset.'],
+    ];
+    restartLogs.forEach(([delay, level, msg]) => {
+      setTimeout(() => { if (isDevMode) addLog(level, msg); }, delay);
+    });
+    // Collapse all tree nodes
+    document.querySelectorAll('.tree-node[data-parent]').forEach(n => n.style.display = 'none');
+    document.querySelectorAll('.tree-node-toggle').forEach(t => { if (t.textContent === '▼') t.textContent = '▶'; });
+    inspectedNodeId = null;
+    renderProperties();
+  }
+
+  // ─── Phase 3: Keyboard Shortcuts Panel ───────────────────────────────────
+
   function toggleShortcutsPanel() {
     if (shortcutsVisible) {
       closeShortcutsPanel();
@@ -1455,6 +1527,26 @@
     });
   }
 
+  // ─── Phase 4: Public API for devmode_eggs.js ─────────────────────────────
+  // Exposed on window.__devmode so eggs.js can hook in without tight coupling.
+  const _enterHooks = [];
+  const _exitHooks  = [];
+
+  window.__devmode = {
+    addLog,
+    addCommand,
+    isDevMode:   () => isDevMode,
+    exitDevMode: () => exitDevMode(),
+    onEnter: (fn) => _enterHooks.push(fn),
+    onExit:  (fn) => _exitHooks.push(fn),
+    switchToMemory:  null,
+    switchToNetwork: null,
+    onPerfTabOpen:   null,
+    onNodeClick:     null,
+    isRecruiterMode: () => window.__devmode && window.__devmode._isRecruiterMode && window.__devmode._isRecruiterMode(),
+    renderProperties: () => renderProperties(),
+  };
+
   // ─── Wire up static HTML ──────────────────────────────────────────────────
   let _initDone = false;
 
@@ -1480,7 +1572,9 @@
     document.querySelectorAll('.dt-tab[data-tab]').forEach(tab => {
       tab.addEventListener('click', () => {
         const id = tab.dataset.tab;
-        if (id === 'inspector' || id === 'performance') switchTab(id);
+        if (id === 'inspector' || id === 'performance' || id === 'memory' || id === 'network') {
+          switchTab(id);
+        }
       });
     });
 

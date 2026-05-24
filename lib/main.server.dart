@@ -101,6 +101,8 @@ void main() {
         // ── QR code styling library (UMD build, no install needed) ───────────
         // Loaded before qr.js so QRCodeStyling is available when qr.js runs.
         script(src: 'https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js'),
+        // ── canvas-confetti — used by Phase 4 easter eggs ─────────────────────
+        script(src: 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js'),
         // ── WhatsApp QR renderer — reads #wa-qr-canvas[data-wa-url] ──────────
         script(src: 'js/qr.js'),
       ],

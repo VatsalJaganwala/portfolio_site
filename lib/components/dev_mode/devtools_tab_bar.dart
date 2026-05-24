@@ -29,10 +29,73 @@ class DevToolsTabBar extends StatelessComponent {
         _tab('Logging', 'logging'),
       ]),
 
-      // Right: egg counter + connection status + exit button slot
+      // Right: toggle buttons + egg counter + connection status + exit button slot
       div(classes: 'dt-tab-bar-right', [
-        // Easter egg counter — updated by devmode.js
-        span(id: 'dt-egg-counter', classes: 'dt-egg-badge', [.text('🥚 0/20')]),
+        // Phase 4 toggle buttons
+        button(
+          id: 'dt-toggle-repaint',
+          classes: 'dt-toggle-btn',
+          attributes: {'title': 'Repaint Rainbow'},
+          [.text('🌈')],
+        ),
+        button(
+          id: 'dt-toggle-slow',
+          classes: 'dt-toggle-btn',
+          attributes: {'title': 'Slow Animations 3×'},
+          [.text('🐢')],
+        ),
+        button(
+          id: 'dt-toggle-banner',
+          classes: 'dt-toggle-btn active',
+          attributes: {'title': 'Debug Banner'},
+          [.text('🏴')],
+        ),
+        // Phase 5 toggle buttons
+        button(
+          id: 'dt-toggle-perf-overlay',
+          classes: 'dt-toggle-btn',
+          attributes: {'title': 'Performance Overlay'},
+          [.text('📊')],
+        ),
+        button(
+          id: 'dt-toggle-semantics',
+          classes: 'dt-toggle-btn',
+          attributes: {'title': 'Semantic Debugger'},
+          [.text('♿')],
+        ),
+        button(
+          id: 'dt-toggle-checker',
+          classes: 'dt-toggle-btn',
+          attributes: {'title': 'Checkerboard Cache'},
+          [.text('♟')],
+        ),
+        button(
+          id: 'dt-toggle-baselines',
+          classes: 'dt-toggle-btn',
+          attributes: {'title': 'Baseline Painting'},
+          [.text('—')],
+        ),
+        button(
+          id: 'dt-toggle-constraints',
+          classes: 'dt-toggle-btn',
+          attributes: {'title': 'Constraints Badges'},
+          [.text('📐')],
+        ),
+        button(
+          id: 'dt-toggle-bp',
+          classes: 'dt-toggle-btn',
+          attributes: {'title': 'Breakpoint Markers'},
+          [.text('📏')],
+        ),
+        button(
+          id: 'dt-toggle-dataflow',
+          classes: 'dt-toggle-btn',
+          attributes: {'title': 'InheritedWidget Flow'},
+          [.text('🔗')],
+        ),
+        div(classes: 'dt-tab-bar-sep', []),
+        // Easter egg counter — updated by devmode_eggs.js
+        span(id: 'dt-egg-counter', classes: 'dt-egg-badge', [.text('🥚 0/15 found')]),
         div(classes: 'dt-tab-bar-sep', []),
         div(classes: 'dt-conn-dot', []),
         span(classes: 'dt-conn-text', [.text('Connected')]),
@@ -58,10 +121,13 @@ class DevToolsTabBar extends StatelessComponent {
         'xmlns': 'http://www.w3.org/2000/svg',
       },
       [
-        polygon(attributes: {
-          'points': '50,0 100,50 50,100 0,50',
-          'fill': '#61AFEF',
-        }, []),
+        polygon(
+          attributes: {
+            'points': '50,0 100,50 50,100 0,50',
+            'fill': '#61AFEF',
+          },
+          [],
+        ),
       ],
     );
   }

@@ -1827,3 +1827,1184 @@ body.devmode-active .bottom-nav {
     width: calc(100vw - 32px);
   }
 }
+
+/* ================================================================
+   PHASE 4 — EASTER EGG STYLES
+   ================================================================ */
+
+/* ── Console input ─────────────────────────────────────────────── */
+.dt-console-input-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px 6px;
+  border-top: 1px solid var(--dt-border);
+  flex-shrink: 0;
+}
+.dt-console-prompt {
+  font-family: var(--dt-font);
+  font-size: 12px;
+  color: var(--dt-green);
+  user-select: none;
+  flex-shrink: 0;
+}
+.dt-console-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--dt-font);
+  font-size: 12px;
+  color: var(--dt-text);
+  caret-color: var(--dt-blue);
+}
+.dt-console-input::placeholder { color: var(--dt-text-dim); }
+
+/* ── Toggle buttons ────────────────────────────────────────────── */
+.dt-toggle-btn {
+  font-family: var(--dt-font);
+  font-size: 11px;
+  padding: 2px 7px;
+  background: transparent;
+  border: 1px solid var(--dt-border);
+  border-radius: 3px;
+  color: var(--dt-text-dim);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+.dt-toggle-btn.active {
+  background: rgba(97, 175, 239, 0.15);
+  border-color: rgba(97, 175, 239, 0.4);
+  color: var(--dt-blue);
+}
+.dt-toggle-btn:hover:not(.active) {
+  border-color: var(--dt-text-dim);
+  color: var(--dt-text);
+}
+
+/* ── Egg counter badge ─────────────────────────────────────────── */
+.dt-egg-badge {
+  font-family: var(--dt-font);
+  font-size: 10px;
+  color: var(--dt-text-dim);
+  padding: 2px 8px;
+  border: 1px solid var(--dt-border);
+  border-radius: 99px;
+  cursor: default;
+  transition: color 0.3s, border-color 0.3s;
+  white-space: nowrap;
+}
+.dt-egg-badge.has-found {
+  color: var(--dt-yellow);
+  border-color: rgba(225, 192, 100, 0.3);
+}
+
+/* ── Repaint rainbow ───────────────────────────────────────────── */
+.repaint-rainbow-active * {
+  outline: 2px solid transparent;
+  animation: rainbow-border 2s linear infinite;
+}
+@keyframes rainbow-border {
+  0%   { outline-color: hsl(0,   100%, 60%); }
+  25%  { outline-color: hsl(90,  100%, 60%); }
+  50%  { outline-color: hsl(180, 100%, 60%); }
+  75%  { outline-color: hsl(270, 100%, 60%); }
+  100% { outline-color: hsl(360, 100%, 60%); }
+}
+
+/* ── Slow animations ───────────────────────────────────────────── */
+.slow-animations-active * {
+  transition-duration: calc(var(--transition, 200ms) * 3) !important;
+  animation-duration:  calc(var(--transition, 200ms) * 3) !important;
+}
+
+/* ── Debug banner ──────────────────────────────────────────────── */
+/* Banner visual removed — toggle button (🏴) still works as an egg trigger */
+#dt-content-area .dt-debug-banner-active-wrap,
+#dt-content-area.dt-debug-banner-active { /* intentionally empty */ }
+
+/* ── flutter clean flash ───────────────────────────────────────── */
+.dt-clean-flash {
+  animation: clean-flash 0.5s ease forwards;
+}
+@keyframes clean-flash {
+  0%   { opacity: 1; }
+  30%  { opacity: 0; filter: brightness(3); }
+  100% { opacity: 1; }
+}
+
+/* ── Hot reload flash ──────────────────────────────────────────── */
+.dt-hot-reload-flash {
+  animation: hot-reload-flash 0.4s ease forwards;
+}
+@keyframes hot-reload-flash {
+  0%   { background: rgba(229,192,123,0.0); }
+  30%  { background: rgba(229,192,123,0.2); }
+  100% { background: rgba(229,192,123,0.0); }
+}
+
+/* ── Hot restart flash ─────────────────────────────────────────── */
+.dt-hot-restart-flash {
+  position: absolute;
+  inset: 0;
+  background: white;
+  z-index: 9999;
+  pointer-events: none;
+  animation: restart-flash 0.4s ease forwards;
+}
+@keyframes restart-flash {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ── Null crash screen ─────────────────────────────────────────── */
+.dt-null-crash {
+  position: absolute;
+  inset: 0;
+  z-index: 9998;
+  background: #B00020;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 48px;
+  font-family: var(--dt-font);
+  color: white;
+  animation: crash-in 0.2s ease forwards;
+}
+@keyframes crash-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.dt-crash-title  { font-size: 13px; font-weight: bold; margin-bottom: 8px; }
+.dt-crash-msg    { font-size: 18px; font-weight: bold; margin-bottom: 16px; color: #ffcdd2; }
+.dt-crash-detail { font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 4px; }
+.dt-crash-widget { font-size: 12px; color: #ffcdd2; margin-bottom: 4px; padding-left: 16px; }
+.dt-crash-trace  { font-size: 11px; color: rgba(255,255,255,0.5); padding-left: 16px; }
+.dt-crash-hint   { font-size: 13px; margin-top: 24px; }
+.dt-crash-hint kbd {
+  background: rgba(255,255,255,0.2);
+  border-radius: 3px;
+  padding: 1px 6px;
+}
+
+/* ── Matrix rain canvas ────────────────────────────────────────── */
+.dt-matrix-canvas {
+  position: absolute;
+  top: 36px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9000;
+  pointer-events: none;
+}
+
+/* ── Modal overlay ─────────────────────────────────────────────── */
+.dt-modal-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 8000;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dt-modal-box {
+  background: var(--dt-sidebar-bg);
+  border: 1px solid var(--dt-border);
+  border-radius: 8px;
+  min-width: 340px;
+  max-width: 520px;
+  width: 90%;
+  font-family: var(--dt-font);
+  font-size: 12px;
+  color: var(--dt-text);
+  overflow: hidden;
+}
+.dt-modal-wide { max-width: 600px; }
+.dt-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--dt-border);
+  background: var(--dt-tab-bg);
+}
+.dt-modal-title-bar { font-size: 11px; color: var(--dt-text-dim); }
+.dt-modal-close {
+  background: transparent;
+  border: none;
+  color: var(--dt-text-dim);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 4px;
+  line-height: 1;
+}
+.dt-modal-close:hover { color: var(--dt-red); }
+.dt-modal-body {
+  padding: 20px 24px;
+}
+.dt-modal-code {
+  font-family: var(--dt-font);
+  font-size: 13px;
+  color: var(--dt-green);
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+.dt-modal-title {
+  font-size: 14px;
+  color: var(--dt-text);
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+.dt-modal-stack {
+  font-size: 12px;
+  color: var(--dt-text-dim);
+  line-height: 1.8;
+  margin-bottom: 20px;
+}
+.dt-modal-links {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.dt-modal-link {
+  color: var(--dt-blue);
+  text-decoration: none;
+  font-size: 12px;
+}
+.dt-modal-link:hover { text-decoration: underline; }
+
+/* ── Changelog modal ───────────────────────────────────────────── */
+.dt-changelog-body { max-height: 360px; overflow-y: auto; }
+.dt-cl-version {
+  color: var(--dt-orange);
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+.dt-cl-line {
+  color: var(--dt-text-dim);
+  padding-left: 8px;
+  line-height: 1.7;
+}
+
+/* ── Bundle size modal ─────────────────────────────────────────── */
+.dt-bundle-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.dt-bundle-block {
+  border-radius: 4px;
+  padding: 12px 8px;
+  font-size: 10px;
+  color: var(--dt-text);
+  text-align: center;
+  cursor: default;
+  line-height: 1.4;
+}
+.dt-bundle-hint { font-size: 10px; color: var(--dt-text-dim); }
+
+/* ── DI overlay ────────────────────────────────────────────────── */
+.dt-di-overlay {
+  position: absolute;
+  top: 40px; left: 0; right: 0;
+  background: rgba(30,34,39,0.97);
+  border-bottom: 1px solid var(--dt-border);
+  padding: 12px;
+  font-family: var(--dt-font);
+  font-size: 11px;
+  z-index: 500;
+  animation: slide-down 0.2s ease;
+}
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.dt-di-title { color: var(--dt-text-dim); margin-bottom: 8px; font-size: 10px; text-transform: uppercase; }
+.dt-di-node  { color: var(--dt-blue); line-height: 1.8; }
+.dt-di-node.indent1 { padding-left: 16px; }
+.dt-di-node.indent2 { padding-left: 32px; }
+.dt-di-node.indent3 { padding-left: 48px; }
+.dt-di-node.indent4 { padding-left: 64px; }
+.dt-di-node.badge   { color: var(--dt-purple); }
+.dt-di-node.pending { color: var(--dt-yellow); }
+
+/* ================================================================
+   PHASE 5 — NEXT TASKS CSS
+   ================================================================ */
+
+/* ── RenderFlex overflow banner (EGG-24) ───────────────────────── */
+.dt-overflow-banner {
+  position: sticky;
+  bottom: 0;
+  left: 0; right: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    #E5C07B,
+    #E5C07B 10px,
+    #1a1500 10px,
+    #1a1500 20px
+  );
+  color: #000;
+  font-family: var(--dt-font);
+  font-size: 11px;
+  font-weight: bold;
+  padding: 6px 12px;
+  cursor: pointer;
+  z-index: 200;
+  user-select: none;
+}
+.dt-overflow-banner:hover { opacity: 0.9; }
+
+/* ── Widget size tooltip (EGG-18) ──────────────────────────────── */
+.dt-size-tooltip {
+  position: fixed;
+  background: var(--dt-overlay-bg);
+  border: 1px solid var(--dt-border);
+  font-family: var(--dt-font);
+  font-size: 10px;
+  color: var(--dt-text);
+  padding: 3px 8px;
+  border-radius: 3px;
+  pointer-events: none;
+  z-index: 9990;
+  white-space: nowrap;
+}
+
+/* ── Memory view (EGG-20) ──────────────────────────────────────── */
+.dt-memory-view {
+  position: absolute;
+  top: 36px; bottom: 180px; left: 0; right: 0;
+  background: var(--dt-bg);
+  overflow-y: auto;
+  padding: 28px 32px;
+  display: none;
+  z-index: 10;
+}
+.dt-heap-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(2, 80px);
+  gap: 6px;
+  margin: 20px 0 12px;
+}
+.dt-heap-block {
+  border-radius: 4px;
+  padding: 8px;
+  font-family: var(--dt-font);
+  font-size: 10px;
+  color: var(--dt-text);
+  cursor: default;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.05);
+  transition: filter 0.15s;
+}
+.dt-heap-block:hover { filter: brightness(1.3); }
+.dt-heap-label { line-height: 1.4; }
+.dt-heap-hint {
+  font-family: var(--dt-font);
+  font-size: 10px;
+  color: var(--dt-text-dim);
+  margin-bottom: 8px;
+}
+.dt-isolate-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--dt-font);
+  font-size: 11px;
+  color: var(--dt-text);
+  padding: 4px 0;
+}
+.dt-isolate-count { color: var(--dt-text-dim); margin-left: auto; font-size: 10px; }
+.dt-isolate-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dt-isolate-dot.active    { background: var(--dt-green); }
+.dt-isolate-dot.suspended { background: var(--dt-yellow); animation: live-pulse 2s ease infinite; }
+
+/* ── Network view (EGG-19) ─────────────────────────────────────── */
+.dt-network-view {
+  position: absolute;
+  top: 36px; bottom: 180px; left: 0; right: 0;
+  background: var(--dt-bg);
+  overflow-y: auto;
+  padding: 28px 32px;
+  display: none;
+  z-index: 10;
+}
+.dt-network-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--dt-font);
+  font-size: 11px;
+  color: var(--dt-text);
+  margin-top: 16px;
+}
+.dt-network-table th {
+  text-align: left;
+  padding: 6px 12px;
+  color: var(--dt-text-dim);
+  border-bottom: 1px solid var(--dt-border);
+  font-weight: 500;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.dt-network-table td {
+  padding: 6px 12px;
+  border-bottom: 1px solid rgba(62,68,81,0.4);
+}
+.dt-network-table tr:hover td { background: var(--dt-hover-bg); }
+.dt-net-ok { color: var(--dt-green); }
+.dt-net-pending { cursor: pointer; }
+.dt-net-pending-status {
+  color: var(--dt-yellow);
+  animation: live-pulse 1.5s ease infinite;
+}
+
+/* ── Build variant dropdown (EGG-23) ───────────────────────────── */
+.dt-build-variant-select {
+  font-family: var(--dt-font);
+  font-size: 10px;
+  background: var(--dt-tab-bg);
+  border: 1px solid var(--dt-border);
+  border-radius: 3px;
+  color: var(--dt-text-dim);
+  padding: 2px 6px;
+  cursor: pointer;
+  outline: none;
+  height: 22px;
+}
+.dt-build-variant-select:hover { border-color: var(--dt-text-dim); }
+.dt-build-variant-select option { background: var(--dt-sidebar-bg); }
+
+/* ── Command suggestion panel ──────────────────────────────────── */
+.dt-cmd-suggestions {
+  display: none;
+  position: absolute;
+  /* Sits above the console header — anchored to #dt-console which is position:relative */
+  bottom: 100%;
+  left: 0; right: 0;
+  max-height: 320px;
+  overflow-y: auto;
+  background: #161B22;
+  border: 1px solid var(--dt-border);
+  border-bottom: 2px solid var(--dt-blue);
+  border-radius: 6px 6px 0 0;
+  z-index: 800;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* #dt-console needs position:relative so the panel anchors to it */
+#dt-console {
+  position: relative;
+}
+
+/* Scrollbar inside the suggestion panel */
+.dt-cmd-suggestions::-webkit-scrollbar { width: 4px; }
+.dt-cmd-suggestions::-webkit-scrollbar-track { background: transparent; }
+.dt-cmd-suggestions::-webkit-scrollbar-thumb { background: var(--dt-border); border-radius: 2px; }
+
+.dt-cmd-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 12px;
+  cursor: pointer;
+  transition: background 0.1s;
+  border-bottom: 1px solid rgba(62, 68, 81, 0.3);
+}
+.dt-cmd-item:last-child { border-bottom: none; }
+.dt-cmd-item:hover,
+.dt-cmd-item.active {
+  background: var(--dt-selection-bg);
+}
+
+.dt-cmd-item-name {
+  font-family: var(--dt-font);
+  font-size: 12px;
+  color: var(--dt-blue);
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 180px;
+}
+
+.dt-cmd-item-desc {
+  font-family: var(--dt-font);
+  font-size: 11px;
+  color: var(--dt-text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Highlighted match portion */
+.dt-cmd-match {
+  background: rgba(97, 175, 239, 0.25);
+  color: var(--dt-blue);
+  border-radius: 2px;
+  font-style: normal;
+}
+
+/* ================================================================
+   NEXT-07: CPU Flame Chart
+   ================================================================ */
+.dt-cpu-profile-btn {
+  font-family: var(--dt-font);
+  font-size: 11px;
+  background: transparent;
+  border: 1px solid var(--dt-border);
+  border-radius: 4px;
+  color: var(--dt-orange);
+  padding: 4px 12px;
+  cursor: pointer;
+  margin: 12px 0 20px;
+  transition: background 0.15s, border-color 0.15s;
+}
+.dt-cpu-profile-btn:hover {
+  background: rgba(229, 192, 123, 0.1);
+  border-color: var(--dt-orange);
+}
+
+.dt-cpu-flame-chart {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--dt-border);
+}
+.dt-cpu-title {
+  font-family: var(--dt-font);
+  font-size: 11px;
+  color: var(--dt-text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
+}
+.dt-cpu-rows { display: flex; flex-direction: column; gap: 4px; }
+.dt-cpu-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.dt-cpu-row.indent1 { padding-left: 20px; }
+.dt-cpu-row.indent2 { padding-left: 40px; }
+.dt-cpu-row.indent3 { padding-left: 60px; }
+.dt-cpu-row.indent4 { padding-left: 80px; }
+
+.dt-cpu-label {
+  font-family: var(--dt-font);
+  font-size: 11px;
+  color: var(--dt-text);
+  width: 180px;
+  flex-shrink: 0;
+  text-align: right;
+}
+.dt-cpu-bar {
+  height: 20px;
+  background: var(--dt-orange);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  min-width: 40px;
+  transition: width 0.6s ease;
+}
+.dt-cpu-bar.pending { background: var(--dt-red); }
+.dt-cpu-time {
+  font-family: var(--dt-font);
+  font-size: 10px;
+  color: rgba(0,0,0,0.8);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.dt-cpu-hint {
+  font-family: var(--dt-font);
+  font-size: 11px;
+  color: var(--dt-text-dim);
+  font-style: italic;
+  margin-top: 12px;
+}
+
+/* ================================================================
+   NEXT-08: Layout Explorer
+   ================================================================ */
+.dt-layout-explorer {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--dt-border);
+}
+.dt-layout-title {
+  font-family: var(--dt-font);
+  font-size: 10px;
+  color: var(--dt-text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
+}
+.dt-layout-box {
+  border-radius: 3px;
+  padding: 8px;
+  position: relative;
+}
+.dt-layout-box.margin  { border: 1px dashed var(--dt-orange); background: rgba(229,192,123,0.05); }
+.dt-layout-box.padding { border: 1px dashed var(--dt-cyan);   background: rgba(86,182,194,0.05); margin: 6px; }
+.dt-layout-box.content { border: 1px solid var(--dt-blue);    background: rgba(97,175,239,0.08); margin: 6px; min-height: 32px; display: flex; align-items: center; justify-content: center; }
+.dt-layout-label {
+  font-family: var(--dt-font);
+  font-size: 9px;
+  color: var(--dt-text-dim);
+  position: absolute;
+  top: 2px; left: 4px;
+}
+.dt-layout-content-size {
+  font-family: var(--dt-font);
+  font-size: 11px;
+  color: var(--dt-blue);
+}
+
+/* ================================================================
+   NEXT-09: Code Review Context Menu
+   ================================================================ */
+.dt-code-review-menu {
+  position: fixed;
+  z-index: 9500;
+  background: var(--dt-sidebar-bg);
+  border: 1px solid var(--dt-border);
+  border-radius: 6px;
+  min-width: 210px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  overflow: hidden;
+  animation: crash-in 0.12s ease;
+}
+.dt-crm-header {
+  font-family: var(--dt-font);
+  font-size: 10px;
+  color: var(--dt-text-dim);
+  padding: 8px 12px 6px;
+  border-bottom: 1px solid var(--dt-border);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.dt-crm-item {
+  font-family: var(--dt-font);
+  font-size: 12px;
+  color: var(--dt-text);
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background 0.1s;
+  border-bottom: 1px solid rgba(62,68,81,0.3);
+}
+.dt-crm-item:last-child { border-bottom: none; }
+.dt-crm-item:hover { background: var(--dt-selection-bg); color: var(--dt-blue); }
+
+/* ================================================================
+   REMAINING EGGS CSS
+   ================================================================ */
+
+/* ── State Wars / GPT modal table ──────────────────────────────── */
+.dt-sw-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--dt-font);
+  font-size: 11px;
+  color: var(--dt-text);
+  margin-bottom: 16px;
+}
+.dt-sw-table th {
+  text-align: left;
+  padding: 6px 10px;
+  color: var(--dt-text-dim);
+  border-bottom: 1px solid var(--dt-border);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.dt-sw-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(62,68,81,0.3);
+}
+.dt-sw-table tr:last-child td { border-bottom: none; }
+.sw-good { color: var(--dt-green); }
+.sw-mid  { color: var(--dt-yellow); }
+.sw-bad  { color: var(--dt-red); }
+.dt-sw-verdict {
+  font-family: var(--dt-font);
+  font-size: 12px;
+  color: var(--dt-text-dim);
+  font-style: italic;
+  border-top: 1px solid var(--dt-border);
+  padding-top: 12px;
+  margin-top: 4px;
+}
+
+/* ── pub.dev package card (EGG-37) ─────────────────────────────── */
+.dt-pubdev-card {
+  background: var(--dt-sidebar-bg);
+  border: 1px solid var(--dt-border);
+  border-radius: 6px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  font-family: var(--dt-font);
+  font-size: 11px;
+}
+.dt-pubdev-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.dt-pubdev-icon { font-size: 14px; }
+.dt-pubdev-name {
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--dt-blue);
+}
+.dt-pubdev-version { color: var(--dt-text-dim); font-size: 10px; }
+.dt-pubdev-link {
+  margin-left: auto;
+  color: var(--dt-blue);
+  text-decoration: none;
+  font-size: 10px;
+}
+.dt-pubdev-link:hover { text-decoration: underline; }
+.dt-pubdev-desc {
+  color: var(--dt-text);
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+.dt-pubdev-stats {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+  color: var(--dt-text-dim);
+  font-size: 10px;
+}
+.dt-pubdev-stat strong { color: var(--dt-text); }
+.dt-pubdev-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+.dt-pubdev-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  border: 1px solid var(--dt-border);
+  color: var(--dt-text-dim);
+}
+.dt-pubdev-badge.fav   { border-color: rgba(229,192,123,0.4); color: var(--dt-yellow); }
+.dt-pubdev-badge.safe  { border-color: rgba(152,195,121,0.4); color: var(--dt-green); }
+.dt-pubdev-badge.platform { border-color: rgba(97,175,239,0.4); color: var(--dt-blue); }
+
+.dt-pubdev-card.loading {
+  position: relative;
+  overflow: hidden;
+}
+.dt-pubdev-card.loading .dt-pubdev-version,
+.dt-pubdev-card.loading .dt-pubdev-desc,
+.dt-pubdev-card.loading .dt-pubdev-stat,
+.dt-pubdev-card.loading .dt-pubdev-badge {
+  animation: dt-pulse 1.5s ease-in-out infinite;
+}
+@keyframes dt-pulse {
+  0% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.4; }
+}
+
+/* ── CI pipeline pill (EGG-56) ─────────────────────────────────── */
+.dt-ci-pill {
+  font-family: var(--dt-font);
+  font-size: 10px;
+  color: var(--dt-text-dim);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border: 1px solid var(--dt-border);
+  border-radius: 99px;
+  white-space: nowrap;
+  cursor: default;
+}
+.dt-ci-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--dt-green);
+  flex-shrink: 0;
+}
+.dt-ci-dot.running {
+  background: var(--dt-yellow);
+  animation: live-pulse 0.8s ease infinite;
+}
+
+/* ── Enterprise node badge (EGG-70) ────────────────────────────── */
+.dt-enterprise-node { opacity: 0; animation: crash-in 0.3s ease 0.1s forwards; }
+.dt-enterprise-badge {
+  font-family: var(--dt-font);
+  font-size: 9px;
+  color: var(--dt-yellow);
+  background: rgba(209,154,102,0.12);
+  border: 1px solid rgba(209,154,102,0.3);
+  border-radius: 3px;
+  padding: 1px 5px;
+  margin-left: 6px;
+}
+
+/* ── Jaspr meta section in properties ──────────────────────────── */
+.dt-jaspr-meta .dt-prop-row { padding: 2px 0; }
+
+/* ================================================================
+   TASK A — Low-effort CSS toggles
+   ================================================================ */
+
+/* EGG-15 — Checkerboard Raster Cache */
+.raster-cache-active img {
+  position: relative;
+  outline: 2px solid #0ff;
+}
+
+/* EGG-16 — Baseline Painting */
+.baseline-active p,
+.baseline-active span,
+.baseline-active h1,
+.baseline-active h2,
+.baseline-active h3,
+.baseline-active li {
+  border-bottom: 1px solid rgba(224, 108, 117, 0.55);
+}
+
+/* EGG-30 — Context Depth Meter */
+.dt-context-meter {
+  position: sticky;
+  bottom: 8px;
+  left: 8px;
+  background: rgba(30, 34, 39, 0.92);
+  border: 1px solid var(--dt-border);
+  font-family: var(--dt-font);
+  font-size: 9px;
+  color: var(--dt-text-dim);
+  padding: 3px 10px;
+  border-radius: 4px;
+  pointer-events: none;
+  max-width: 480px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  z-index: 50;
+  margin: 0 0 8px 8px;
+}
+
+/* EGG-35 — Constraints Badges */
+.dt-constraints-badge {
+  position: absolute;
+  top: 8px; right: 8px;
+  font-family: var(--dt-font);
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 3px;
+  pointer-events: none;
+  z-index: 100;
+}
+.dt-cb-tight { background: rgba(224,108,117,0.15); color: var(--dt-red);   border: 1px solid rgba(224,108,117,0.3); }
+.dt-cb-loose { background: rgba(152,195,121,0.15); color: var(--dt-green); border: 1px solid rgba(152,195,121,0.3); }
+
+/* EGG-50 — Breakpoint Lines */
+.dt-bp-line {
+  position: absolute;
+  left: 0; right: 0;
+  border-top: 1px dashed var(--dt-text-dim);
+  pointer-events: none;
+  z-index: 80;
+}
+.dt-bp-line.active { border-color: var(--dt-blue); }
+.dt-bp-label {
+  font-family: var(--dt-font);
+  font-size: 9px;
+  color: var(--dt-text-dim);
+  background: var(--dt-bg);
+  padding: 0 4px;
+  position: absolute;
+  top: -8px; left: 8px;
+}
+.dt-bp-line.active .dt-bp-label { color: var(--dt-blue); }
+
+/* EGG-58 — Flutter Favourite Badge */
+.dt-ff-badge {
+  font-family: var(--dt-font);
+  font-size: 10px;
+  color: var(--dt-yellow);
+  border: 1px solid rgba(209,154,102,0.35);
+  border-radius: 3px;
+  padding: 3px 10px;
+  margin-top: 8px;
+  display: inline-block;
+}
+
+/* EGG-59 — Flutter Weekly Banner */
+.dt-flutter-weekly {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(97,175,239,0.08);
+  border: 1px solid rgba(97,175,239,0.25);
+  border-radius: 6px;
+  padding: 8px 14px;
+  margin-bottom: 16px;
+  font-family: var(--dt-font);
+  font-size: 11px;
+  color: var(--dt-text);
+}
+.dt-fw-icon { font-size: 16px; flex-shrink: 0; }
+.dt-fw-text { flex: 1; }
+.dt-fw-text strong { color: var(--dt-blue); }
+.dt-fw-close {
+  background: transparent;
+  border: none;
+  color: var(--dt-text-dim);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 4px;
+  flex-shrink: 0;
+}
+.dt-fw-close:hover { color: var(--dt-red); }
+
+/* EGG-62 — Discord Status Pill */
+.dt-discord-pill {
+  font-family: var(--dt-font);
+  font-size: 10px;
+  color: var(--dt-text-dim);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border: 1px solid var(--dt-border);
+  border-radius: 99px;
+  white-space: nowrap;
+  cursor: default;
+}
+.dt-discord-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #5865F2; /* Discord blurple */
+  flex-shrink: 0;
+  animation: live-pulse 3s ease infinite;
+}
+
+/* EGG-69 — about_me.dart Hover Docs */
+.dt-about-doc {
+  position: fixed;
+  background: var(--dt-sidebar-bg);
+  border: 1px solid var(--dt-border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-family: var(--dt-font);
+  font-size: 11px;
+  color: var(--dt-text);
+  pointer-events: none;
+  z-index: 9000;
+  min-width: 260px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+.dt-about-doc-title { color: var(--dt-text-dim); margin-bottom: 6px; font-size: 10px; }
+.dt-about-doc-line  { line-height: 1.7; }
+
+/* EGG-93 — Shader badge */
+.dt-shader-badge {
+  font-family: var(--dt-font);
+  font-size: 10px;
+  color: var(--dt-green);
+  border: 1px solid rgba(152,195,121,0.3);
+  border-radius: 99px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+/* ================================================================
+   TASK B — Properties panel additions
+   ================================================================ */
+
+/* EGG-28 — Key Inspector */
+.dt-key-inspector { margin-bottom: 8px; }
+
+/* EGG-29 — Future/Stream Visualiser */
+.dt-future-vis { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--dt-border); }
+.dt-future-pipeline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--dt-font);
+  font-size: 11px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+.dt-future-node   { color: var(--dt-blue); }
+.dt-future-arrow  { color: var(--dt-text-dim); }
+.dt-future-status { font-weight: bold; }
+.dt-future-status.pending  { color: var(--dt-yellow); animation: live-pulse 1.5s ease infinite; }
+.dt-future-status.resolved { color: var(--dt-green); }
+.dt-future-chain  { font-family: var(--dt-font); font-size: 10px; color: var(--dt-text-dim); padding-left: 8px; }
+
+/* EGG-41 — Pub Points */
+.dt-pub-points { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--dt-border); }
+.dt-pp-total {
+  font-family: var(--dt-font);
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--dt-green);
+  margin-bottom: 8px;
+}
+.dt-pp-row {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--dt-font);
+  font-size: 11px;
+  padding: 2px 0;
+  border-bottom: 1px solid rgba(62,68,81,0.3);
+}
+.dt-pp-row.good { color: var(--dt-green); }
+.dt-pp-row.warn { color: var(--dt-yellow); }
+
+/* EGG-44 — Bloc Event Log */
+.dt-bloc-log { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--dt-border); }
+.dt-bloc-event {
+  font-family: var(--dt-font);
+  font-size: 10px;
+  color: var(--dt-purple);
+  padding: 2px 0;
+  line-height: 1.6;
+  animation: crash-in 0.2s ease;
+}
+
+/* EGG-85 — Expandable Stack Trace */
+.dt-error-trace {
+  margin: 4px 12px 4px 84px;
+  padding: 8px 10px;
+  background: rgba(224,108,117,0.06);
+  border-left: 2px solid var(--dt-red);
+  border-radius: 0 4px 4px 0;
+  font-family: var(--dt-font);
+  font-size: 10px;
+  animation: crash-in 0.15s ease;
+}
+.dt-trace-title { color: var(--dt-red); margin-bottom: 4px; font-weight: bold; }
+.dt-trace-line  { color: var(--dt-text-dim); line-height: 1.7; }
+.dt-trace-link  { color: var(--dt-blue); cursor: pointer; }
+.dt-trace-link:hover { text-decoration: underline; }
+
+/* ================================================================
+   TASK C — Content overlays
+   ================================================================ */
+
+/* EGG-13 — Performance Overlay widget */
+.dt-perf-overlay-widget {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(0,0,0,0.75);
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: none;
+}
+.dt-po-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dt-po-label {
+  font-family: var(--dt-font);
+  font-size: 9px;
+  color: var(--dt-text-dim);
+  width: 52px;
+  flex-shrink: 0;
+}
+.dt-po-canvas { border-radius: 2px; background: rgba(255,255,255,0.05); }
+
+/* EGG-14 — Semantic labels */
+.dt-semantic-label {
+  position: fixed;
+  background: rgba(97, 175, 239, 0.88);
+  color: #000;
+  font-family: var(--dt-font);
+  font-size: 9px;
+  padding: 2px 5px;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 9000;
+  white-space: nowrap;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* EGG-27 — InheritedWidget Data Flow */
+.dt-data-flow {
+  padding: 12px;
+  border-top: 1px solid var(--dt-border);
+  margin-top: 8px;
+}
+.dt-df-label {
+  font-family: var(--dt-font);
+  font-size: 10px;
+  color: var(--dt-cyan);
+  margin-bottom: 6px;
+  letter-spacing: 0.04em;
+}
+.dt-df-node {
+  font-family: var(--dt-font);
+  font-size: 11px;
+  color: var(--dt-blue);
+  padding: 2px 8px;
+  background: rgba(97,175,239,0.06);
+  border-radius: 3px;
+  margin: 2px 0;
+}
+.dt-df-line {
+  width: 2px;
+  height: 12px;
+  margin: 0 auto 0 16px;
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--dt-cyan) 0px, var(--dt-cyan) 4px,
+    transparent 4px, transparent 8px
+  );
+  animation: flow-travel 1s linear infinite;
+}
+@keyframes flow-travel {
+  from { background-position: 0 0; }
+  to   { background-position: 0 8px; }
+}
+
+/* EGG-34 — Animation Scrubber */
+.dt-anim-scrubber {
+  position: sticky;
+  bottom: 0;
+  left: 0; right: 0;
+  background: rgba(30,34,39,0.97);
+  border-top: 1px solid var(--dt-border);
+  padding: 6px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--dt-font);
+  font-size: 11px;
+  color: var(--dt-text-dim);
+  z-index: 60;
+}
+.dt-scrubber-label { flex-shrink: 0; }
+.dt-scrubber-range {
+  flex: 1;
+  accent-color: var(--dt-blue);
+  cursor: pointer;
+}
+.dt-scrubber-val { width: 32px; text-align: right; flex-shrink: 0; color: var(--dt-text); }
