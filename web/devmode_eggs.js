@@ -14,6 +14,11 @@
 (function () {
   'use strict';
 
+  // ─── Configuration ────────────────────────────────────────────────────────
+  // Set to true when you learn Bloc and want to enable Bloc-specific easter eggs.
+  // When false, state management easter eggs and logs default to GetX / generic.
+  const ENABLE_BLOC_EASTER_EGGS = false;
+
   // ─── Shared helpers (re-exposed by devmode.js via window.__devmode) ───────
   // We poll until devmode.js has initialised and exposed its API.
   function waitForDevmode(cb) {
@@ -39,7 +44,7 @@
   // ─── Easter egg state ─────────────────────────────────────────────────────
   const easterEggState = {
     foundEggs: new Set(),
-    totalEggs: 15,
+    totalEggs: ENABLE_BLOC_EASTER_EGGS ? 15 : 14,
     repaintRainbow: false,
     slowAnimations: false,
     debugBanner: true,   // ON by default when DevMode opens
@@ -65,12 +70,16 @@
     commandHistoryIndex: -1,
   };
 
+  let _checkerboardActive = false;
+  let _baselinesActive = false;
+
   const ALL_EGGS = [
     'flutter-doctor', 'flutter-clean', 'flutter-pub-get',
     'flutter-build-web', 'flutter-test', 'flutter-analyze',
     'git-log', 'hire-sh', 'null-crash', 'konami',
     'repaint-rainbow', 'slow-animations', 'network-tab',
-    'stackoverflow', 'state-wars',
+    'stackoverflow',
+    ...(ENABLE_BLOC_EASTER_EGGS ? ['state-wars'] : []),
   ];
 
   // ─── Egg counter ──────────────────────────────────────────────────────────
@@ -229,7 +238,8 @@
     'discord', 'theme', 'dwg', 'pub upgrade --major-versions', 'changelog',
     'recruiter', 'recruter', 'vim', 'di', 'help', 'audit', 'tail', 'liveshare',
     'observatory', 'flutter build web --analyze-size',
-    'state wars', 'dart challenge',
+    ...(ENABLE_BLOC_EASTER_EGGS ? ['state wars'] : []),
+    'dart challenge',
     'shaders', 'hire vatsal',
   ];
 
@@ -440,7 +450,7 @@
       'tail':                             () => eggTail(dm),
       'liveshare':                        () => eggLiveShare(dm),
       'observatory':                      () => eggObservatory(dm),
-      'state wars':                       () => eggStateWars(dm),
+      ...(ENABLE_BLOC_EASTER_EGGS ? { 'state wars': () => eggStateWars(dm) } : {}),
       'dart challenge':                   () => eggDartChallenge(dm),
       'shaders':                          () => eggShaderWarmup(dm),
       'hire vatsal':                      () => eggHireVatsal(dm),
@@ -507,8 +517,8 @@
   function eggPubGet(dm) {
     const lines = [
       ['info', 'Resolving dependencies...'],
-      ['info', '+ flutter_bloc 8.1.3'],
-      ['info', '+ riverpod 2.4.9'],
+      ENABLE_BLOC_EASTER_EGGS ? ['info', '+ flutter_bloc 8.1.3'] : ['info', '+ getx 4.6.6'],
+      ENABLE_BLOC_EASTER_EGGS ? ['info', '+ riverpod 2.4.9'] : ['info', '+ get_storage 2.1.1'],
       ['info', '+ go_router 13.2.0'],
       ['info', '+ freezed_annotation 2.4.1'],
       ['info', '+ injectable 2.3.2'],
@@ -693,7 +703,7 @@
       ['info', '  → Checking Flutter expertise...       ✓'],
       ['info', '  → Checking pub.dev packages...        ✓ (smartpub published)'],
       ['info', '  → Checking null safety compliance...  ✓'],
-      ['info', '  → Checking Bloc/Riverpod mastery...   ✓'],
+      ['info', ENABLE_BLOC_EASTER_EGGS ? '  → Checking Bloc/Riverpod mastery...   ✓' : '  → Checking GetX mastery...            ✓'],
       ['info', '  → Checking enterprise experience...   ✓'],
       ['info', '  → Checking self-awareness...          ✓ (this portfolio exists)'],
       ['info', ''],
@@ -765,7 +775,7 @@
       ['info', '  [+42]  How to exit vim after opening it by accident?'],
       ['info', '  [+1]   Is Vatsal available for hire? (answered: YES)'],
       ['info', ''],
-      ['info', 'Tip: The answer to all Flutter questions is: "use Bloc."'],
+      ['info', ENABLE_BLOC_EASTER_EGGS ? 'Tip: The answer to all Flutter questions is: "use Bloc."' : 'Tip: The answer to all Flutter questions is: "use GetX."'],
     ], 0, 150);
     markEggFound('stackoverflow');
   }
@@ -853,8 +863,8 @@
       ['info', '[*] indicates versions that support null safety.'],
       ['info', ''],
       ['info', 'Package                Current  Upgradable  Latest'],
-      ['info', 'flutter_bloc           8.1.3    8.1.3       9.0.0'],
-      ['info', 'riverpod               2.4.9    2.5.1       3.0.0'],
+      ENABLE_BLOC_EASTER_EGGS ? ['info', 'flutter_bloc           8.1.3    8.1.3       9.0.0'] : ['info', 'getx                   4.6.6    4.6.6       5.0.0'],
+      ENABLE_BLOC_EASTER_EGGS ? ['info', 'riverpod               2.4.9    2.5.1       3.0.0'] : ['info', 'get_storage            2.1.1    2.1.1       3.0.0'],
       ['info', 'go_router              13.2.0   14.0.0      14.0.0'],
       ['warning', 'your_confidence        0.1.0    0.1.0       2.0.0  ← update recommended'],
       ['info', ''],
@@ -1035,7 +1045,7 @@
       <div class="dt-di-node indent1">Scaffold</div>
       <div class="dt-di-node indent2">PortfolioBody</div>
       <div class="dt-di-node indent3 badge">@lazySingleton ProjectRepository</div>
-      <div class="dt-di-node indent3 badge">@injectable ProjectsBloc</div>
+      <div class="dt-di-node indent3 badge">@injectable ${ENABLE_BLOC_EASTER_EGGS ? 'ProjectsBloc' : 'ProjectsController'}</div>
       <div class="dt-di-node indent3 badge">@singleton NavigationService</div>
       <div class="dt-di-node indent3">ContactSection</div>
       <div class="dt-di-node indent4 badge pending">@injectable HireService ← Future&lt;Job&gt; pending</div>
@@ -1059,13 +1069,13 @@
     const tailLines = [
       '[  +2ms] Reloaded 0 libraries in 41ms.',
       '[ +847ms] [DevTools] User scrolled to ProjectsSection',
-      '[ +312ms] [Bloc] ProjectsBloc → ProjectsLoaded',
+      ENABLE_BLOC_EASTER_EGGS ? '[ +312ms] [Bloc] ProjectsBloc → ProjectsLoaded' : '[ +312ms] [GetX] ProjectsController → updated',
       '[+1204ms] [Navigator] Route \'/projects\' pushed',
       '[  +89ms] [DevTools] Widget tree updated. 3 dirty nodes.',
       '[+2100ms] [Network] GET /api/github/stats → 200 (34ms)',
       '[ +445ms] [Memory] Current heap: 24.7MB / 512MB available',
       '[+1800ms] [DevTools] User hovered HireButton. isHovered: true',
-      '[  +23ms] [Bloc] ContactBloc → HireEvent dispatched',
+      ENABLE_BLOC_EASTER_EGGS ? '[  +23ms] [Bloc] ContactBloc → HireEvent dispatched' : '[  +23ms] [GetX] ContactController → updated',
       '[+3001ms] [Future] Future<Job> status: pending...',
     ];
     let idx = 0;
@@ -1212,7 +1222,9 @@
 
     const candidateName = 'Vatsal Jaganwala';
     const candidateRole = 'Associate Flutter Developer';
-    const candidateSkills = ['Flutter', 'Dart', 'Bloc', 'Riverpod', 'Jaspr', 'Sound Null Safety', 'REST APIs', 'Git'];
+    const candidateSkills = ENABLE_BLOC_EASTER_EGGS
+      ? ['Flutter', 'Dart', 'Bloc', 'Riverpod', 'Jaspr', 'Sound Null Safety', 'REST APIs', 'Git']
+      : ['Flutter', 'Dart', 'GetX', 'Jaspr', 'Sound Null Safety', 'REST APIs', 'Git'];
 
     const dbLogs = [
       'Initializing Recruiter Search criteria: role="Flutter Developer"...',
@@ -1234,7 +1246,9 @@
     ];
 
     const words = [
-      'FLUTTER', 'DART', 'BLOC', 'RIVERPOD', 'JASPR', 'HIRE_VATSAL', '60_FPS',
+      'FLUTTER', 'DART',
+      ...(ENABLE_BLOC_EASTER_EGGS ? ['BLOC', 'RIVERPOD'] : ['GETX']),
+      'JASPR', 'HIRE_VATSAL', '60_FPS',
       'PASSING', 'GOD_MODE', 'NULL_SAFE', 'SUCCESS', 'CONFIRM_OFFER',
       'PORTFOLIO', 'STABLE', 'CLEAN_CODE', 'OVERLORD', 'ROOT_ACCESS'
     ];
@@ -1339,7 +1353,7 @@
 
         const requirements = [
           { text: 'Experience: 3+ years Flutter/Dart development', met: true },
-          { text: 'Architecture: clean Bloc, Riverpod & DI workflows', met: true },
+          { text: ENABLE_BLOC_EASTER_EGGS ? 'Architecture: clean Bloc, Riverpod & DI workflows' : 'Architecture: clean GetX & DI workflows', met: true },
           { text: 'Academic Credentials: B.E. IT Graduate (CGPA 8.23)', met: true },
           { text: 'Open Source: smartpub package creator (pub.dev audited)', met: true },
           { text: 'Performance Check: 60fps stable portfolio main render', met: true },
@@ -1765,11 +1779,16 @@
     easterEggState.memLeakTimer = null;
   }
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // BOOTSTRAP — called when DevMode activates / deactivates
-  // ═══════════════════════════════════════════════════════════════════════════
-
+  // ─── Bootstrap — called when DevMode activates / deactivates ─────────────
+  // Wrap the entire onDevModeEnter in a try/catch so a setup error never
+  // prevents DevMode from opening.
   function onDevModeEnter(dm) {
+    try { _onDevModeEnterImpl(dm); } catch (err) {
+      dm.addLog('error', `[EggSetup] ${err.message}`);
+    }
+  }
+
+  function _onDevModeEnterImpl(dm) {
     // Console input is already in the Dart-rendered DOM — just wire the listener.
     // Use a flag on the IIFE scope (not dataset) so it resets on each entry.
     const input = document.getElementById('dt-console-input');
@@ -1843,7 +1862,7 @@
     // Update egg badge
     updateEggBadge();
     updateAnalyticsBadge();
-  }
+  } // end _onDevModeEnterImpl
 
   function onDevModeExit() {
     // Stop all background timers
@@ -1891,6 +1910,8 @@
     teardownSemanticDebugger();
     teardownDataFlow();
     hideAnimScrubber();
+    teardownCheckerboard();
+    teardownBaselines();
     // Reset all toggle button states
     ['dt-toggle-repaint','dt-toggle-slow','dt-toggle-perf-overlay',
      'dt-toggle-semantics','dt-toggle-checker','dt-toggle-baselines',
@@ -2710,6 +2731,11 @@
   // ─── EGG-46 — State Wars Modal ───────────────────────────────────────────
   // Trigger: type `state wars` in console
   function eggStateWars(dm) {
+    if (!ENABLE_BLOC_EASTER_EGGS) {
+      dm.addLog('warning', 'State Management Wars easter egg is currently disabled (ENABLE_BLOC_EASTER_EGGS is false).');
+      markEggFound('state-wars');
+      return;
+    }
     if (document.getElementById('dt-state-wars-modal')) return;
     const modal = document.createElement('div');
     modal.id = 'dt-state-wars-modal';
@@ -3192,6 +3218,7 @@
     const ca = document.getElementById('dt-content-area');
     if (!ca) return;
     const on = ca.classList.toggle('raster-cache-active');
+    _checkerboardActive = on;
     const btn = document.getElementById('dt-toggle-checker');
     if (btn) btn.classList.toggle('active', on);
     dm.addLog('debug', `checkerboardRasterCacheImages = ${on}. Cached layers highlighted in cyan.`);
@@ -3203,10 +3230,23 @@
     const ca = document.getElementById('dt-content-area');
     if (!ca) return;
     const on = ca.classList.toggle('baseline-active');
+    _baselinesActive = on;
     const btn = document.getElementById('dt-toggle-baselines');
     if (btn) btn.classList.toggle('active', on);
     dm.addLog('debug', `debugPaintBaselinesEnabled = ${on}. Text baselines painted in red.`);
     if (on) markEggFound('baselines');
+  }
+
+  function teardownCheckerboard() {
+    _checkerboardActive = false;
+    const ca = document.getElementById('dt-content-area');
+    if (ca) ca.classList.remove('raster-cache-active');
+  }
+
+  function teardownBaselines() {
+    _baselinesActive = false;
+    const ca = document.getElementById('dt-content-area');
+    if (ca) ca.classList.remove('baseline-active');
   }
 
   // EGG-30 — Context Depth Meter (sticky badge in content area)
@@ -3642,6 +3682,7 @@
 
   // EGG-44 — Bloc Event Log (shown when experience/projects node selected)
   function injectBlocEventLog(nodeId, dm) {
+    if (!ENABLE_BLOC_EASTER_EGGS) return;
     if (!['projects', 'experience', 'contact'].includes(nodeId)) return;
     const container = document.getElementById('dt-props-inspected');
     if (!container || container.querySelector('.dt-bloc-log')) return;

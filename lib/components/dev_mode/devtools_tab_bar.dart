@@ -27,6 +27,7 @@ class DevToolsTabBar extends StatelessComponent {
         _tab('Performance', 'performance'),
         _tab('Memory', 'memory'),
         _tab('Logging', 'logging'),
+        _tab('Network', 'network'),
       ]),
 
       // Right: toggle buttons + egg counter + connection status + exit button slot

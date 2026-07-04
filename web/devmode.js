@@ -245,8 +245,8 @@
 
     // Phase 4: fire enter hooks (devmode_eggs.js)
     _enterHooks.forEach(fn => { try { fn(window.__devmode); } catch(e) {} });
-    // Setup mobile tabs if needed
-    if (isMobile()) setupMobileTabs();
+    // Setup mobile tabs
+    setupMobileTabs();
   }
 
   // ─── Exit DevMode ─────────────────────────────────────────────────────────
@@ -377,12 +377,12 @@
         addLog('debug', `Key event: '${e.key}'. Did you mean 'q' to quit?`);
       }
     };
-    document.addEventListener('keydown', keyHandler);
+    document.addEventListener('keydown', keyHandler, true);
   }
 
   function removeKeyListener() {
     if (keyHandler) {
-      document.removeEventListener('keydown', keyHandler);
+      document.removeEventListener('keydown', keyHandler, true);
       keyHandler = null;
     }
   }
@@ -1517,6 +1517,8 @@
   // ─── Mobile tab switching ─────────────────────────────────────────────────
   function setupMobileTabs() {
     document.querySelectorAll('.dt-mobile-tab').forEach(tab => {
+      if (tab.dataset.wired === 'true') return;
+      tab.dataset.wired = 'true';
       tab.addEventListener('click', () => {
         activeMobileTab = tab.dataset.zone;
         document.querySelectorAll('.dt-mobile-tab').forEach(t =>
@@ -1614,7 +1616,7 @@
     });
 
     // Mobile tabs
-    if (isMobile()) setupMobileTabs();
+    setupMobileTabs();
   }
 
   // Run after DOM is ready
@@ -1628,6 +1630,6 @@
   const mutObs = new MutationObserver(() => {
     if (!_initDone) init();
   });
-  mutObs.observe(document.body, { childList: true, subtree: true });
+  mutObs.observe(document.documentElement, { childList: true, subtree: true });
 
 })();
